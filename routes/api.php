@@ -194,10 +194,11 @@ Route::get('/google/authenticate', [GoogleController::class, 'getLogindataUsingG
 
 
 
-Route::middleware(['cors', 'auth:api'])->group(function () {
+ 
    Route::middleware(['is.admin'])->get('/userauths/count', [UserauthController::class, 'countUsers']);
    Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
    Route::post('/notifications/read', [NotificationController::class, 'markAsRead']);
    Route::post('/notifications/test', [NotificationController::class, 'testNotification']);
-Route::post('/track-exit', [VisitorLogController::class, 'trackExit']);
-});
+    Route::post('/track-exit', [VisitorLogController::class, 'trackExit']);
+ 
+ Route::get('/google/authenticate', [GoogleController::class, 'getLogindataUsingGoogleCode']);

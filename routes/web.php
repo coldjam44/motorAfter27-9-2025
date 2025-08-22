@@ -79,8 +79,8 @@ Route::options('auth/google/callback', function () { return response('', 200); }
 Route::options('google/authenticate', function () { return response('', 200); });
 
 // Your CORS routes
-Route::middleware('cors')->group(function () {
+ 
     Route::get('auth/google', [GoogleController::class, 'googlepage']);
     Route::get('auth/google/callback', [GoogleController::class, 'googlecallback']);
     Route::get('/google/authenticate', [GoogleController::class, 'getLogindataUsingGoogleCode']);
-});
+ 
