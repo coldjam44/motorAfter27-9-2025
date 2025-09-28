@@ -1,14 +1,28 @@
+# Environment
+.env
+
+# Laravel storage
 storage/framework/cache/*
 storage/framework/views/*
+
+# Node and vendor
 node_modules/
 vendor/
+
+# Archives & backups
 motors.zip
 ffmpeg-release-amd64-static.tar.xz
 motors_backup_*.sql
 *.zip
+
+# System files
 .DS_Store
 Thumbs.db
+
+# IDE / editor
 .vscode/
 .idea/
+
+# Lock files
 composer.lock
 package-lock.json.env
