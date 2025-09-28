@@ -11,4 +11,4 @@ Thumbs.db
 .vscode/
 .idea/
 composer.lock
-package-lock.json
+package-lock.json.env
