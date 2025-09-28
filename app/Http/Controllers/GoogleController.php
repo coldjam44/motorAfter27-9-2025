@@ -17,10 +17,19 @@ use Exception;
 
 class GoogleController extends Controller
 {
-    public function googlepage()
-    {
-        return Socialite::driver('google')->redirect();
-    }
+    // public function googlepage()
+    // {
+    //     return Socialite::driver('google')->redirect();
+    // }
+
+public function googlepage()
+{
+    return Socialite::driver('google')
+        ->with(['prompt' => 'select_account consent'])
+        ->redirect();
+}
+
+
 
 
     public function googleCallback(Request $request)
