@@ -1,0 +1,432 @@
+{
+	"info": {
+		"_postman_id": "auction-apis-formdata-2025",
+		"name": "Auction APIs - Form Data Login",
+		"description": "مجموعة APIs المزادات مع تسجيل دخول form-data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Login with Form Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.access_token) {",
+							"        pm.environment.set('jwt_token', responseJson.access_token);",
+							"        console.log('✅ JWT Token saved successfully');",
+							"        console.log('Token:', responseJson.access_token);",
+							"    } else if (responseJson.token) {",
+							"        pm.environment.set('jwt_token', responseJson.token);",
+							"        console.log('✅ JWT Token saved successfully');",
+							"        console.log('Token:', responseJson.token);",
+							"    } else {",
+							"        console.log('❌ No token found in response');",
+							"        console.log('Response:', JSON.stringify(responseJson, null, 2));",
+							"    }",
+							"} else {",
+							"    console.log('❌ Login failed');",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "azsystems@ajwaaalsallmah.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Aa123456789",
+							"type": "text"
+						},
+						{
+							"key": "remember_me",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": ["{{base_url}}"],
+					"path": ["api", "login"]
+				},
+				"description": "تسجيل الدخول باستخدام form-data"
+			}
+		},
+		{
+			"name": "2. Test Token Validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Token is valid', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    console.log('✅ Token is valid');",
+							"    const responseJson = pm.response.json();",
+							"    console.log('User info:', responseJson);",
+							"} else {",
+							"    console.log('❌ Token validation failed');",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/user",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user"]
+				},
+				"description": "اختبار صحة التوكن"
+			}
+		},
+		{
+			"name": "3. Create Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auction_id) {",
+							"        pm.environment.set('auction_id', responseJson.auction_id);",
+							"        pm.environment.set('ad_id', responseJson.ad_id);",
+							"        console.log('✅ Auction created successfully');",
+							"        console.log('Auction ID:', responseJson.auction_id);",
+							"        console.log('Ad ID:', responseJson.ad_id);",
+							"    }",
+							"} else {",
+							"    console.log('❌ Auction creation failed');",
+							"    console.log('Status:', pm.response.code);",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"type": "text"
+						},
+						{
+							"key": "city_id",
+							"value": "8",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مزاد BMW X5 - نظيفة جداً",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "سيارة BMW X5 موديل 2020، نظيفة جداً، فحص كامل، بدون حوادث",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "2500",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "01234567890",
+							"type": "text"
+						},
+						{
+							"key": "kilometer",
+							"value": "85000",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "القاهرة الجديدة - مصر",
+							"type": "text"
+						},
+						{
+							"key": "car_model",
+							"value": "662",
+							"type": "text"
+						},
+						{
+							"key": "starting_price",
+							"value": "2000",
+							"type": "text"
+						},
+						{
+							"key": "auction_duration_days",
+							"value": "5",
+							"type": "text",
+							"description": "Auction duration in days (1-365)"
+						},
+						{
+							"key": "bid_increment",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "main_image",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auctions/create",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "create"]
+				},
+				"description": "إنشاء مزاد جديد"
+			}
+		},
+		{
+			"name": "4. Activate Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Auction activated successfully', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    console.log('✅ Auction activated successfully');",
+							"    console.log('Status:', responseJson.auction.status);",
+							"} else {",
+							"    console.log('❌ Auction activation failed');",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}/activate",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "{{auction_id}}", "activate"]
+				},
+				"description": "تفعيل المزاد"
+			}
+		},
+		{
+			"name": "5. Get Active Auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Active auctions retrieved', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    console.log('✅ Active auctions count:', responseJson.auctions.length);",
+							"    responseJson.auctions.forEach((auction, index) => {",
+							"        console.log(`Auction ${index + 1}:`, {",
+							"            id: auction.auction_data.id,",
+							"            title: auction.ad_data.title,",
+							"            status: auction.auction_data.status,",
+							"            current_bid: auction.auction_data.current_highest_bid",
+							"        });",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/active",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "active"]
+				},
+				"description": "جلب المزادات النشطة"
+			}
+		},
+		{
+			"name": "6. Place Bid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    console.log('✅ Bid placed successfully');",
+							"    console.log('New current price:', responseJson.new_current_price);",
+							"    console.log('Total bids:', responseJson.total_bids);",
+							"} else {",
+							"    console.log('❌ Bid placement failed');",
+							"    console.log('Status:', pm.response.code);",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "json",
+					"raw": "{\n    \"bid_amount\": 2100\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}/bid",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "{{auction_id}}", "bid"]
+				},
+				"description": "وضع مزايدة جديدة"
+			}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// تحديد URL الأساسي إذا لم يكن محدد",
+					"if (!pm.environment.get('base_url')) {",
+					"    pm.environment.set('base_url', 'http://testsites.azsystems.tech');",
+					"}",
+					"",
+					"// عرض معلومات مفيدة قبل كل طلب",
+					"console.log('🚀 Making request to:', pm.request.url.toString());",
+					"if (pm.environment.get('jwt_token')) {",
+					"    console.log('🔑 Using JWT Token');",
+					"} else {",
+					"    console.log('⚠️ No JWT Token found');",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auction_id",
+			"value": "19",
+			"type": "string"
+		},
+		{
+			"key": "ad_id",
+			"value": "557",
+			"type": "string"
+		}
+	]
+}

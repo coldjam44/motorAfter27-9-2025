@@ -82,6 +82,13 @@
     </a>
     </li>
     <br>
+    <li class="menu-item active" style="display: none;">
+    <a href="{{ route('admin.auctions.create') }}" class="menu-link">
+        <i class="menu-icon tf-icons ti ti-gavel"></i>
+        <div data-i18n="Home">{{ __('admin.add_auction') }}</div>
+    </a>
+    </li>
+    <br>
   <li class="menu-item active">
     <a href="{{ route('blogs.index') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-smart-home"></i>

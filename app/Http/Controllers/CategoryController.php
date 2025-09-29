@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categorys = category::paginate(5);
+        $categorys = Category::paginate(5);
         return view('pages.categorys.categorys', compact('categorys'));
     }
 
@@ -124,7 +124,7 @@ class CategoryController extends Controller
 
             ]);
 
-            $categorys = category::findOrFail($request->id);
+            $categorys = Category::findOrFail($request->id);
             $categorys->update([
                 'name_ar'=> $request->name_ar,
                 'name_en'=> $request->name_en,
@@ -167,7 +167,7 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = category::findOrFail($id);
+        $category = Category::findOrFail($id);
 
         // Delete the image from the folder
         $imagePath = public_path('categorys/' . $category->image);

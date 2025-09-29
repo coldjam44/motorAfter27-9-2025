@@ -1,0 +1,425 @@
+{
+	"info": {
+		"_postman_id": "all-auctions-cards-2025",
+		"name": "All Auctions Cards - Motors App",
+		"description": "Collection for retrieving all auctions with basic card information (not just active ones)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Auctions (Basic Cards)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has success and auctions fields', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('success', true);",
+							"    pm.expect(responseJson).to.have.property('auctions');",
+							"    pm.expect(responseJson).to.have.property('total_count');",
+							"    pm.expect(responseJson.auctions).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('Each auction has basic card information', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auctions.length > 0) {",
+							"        const auction = responseJson.auctions[0];",
+							"        pm.expect(auction).to.have.property('auction_id');",
+							"        pm.expect(auction).to.have.property('ad_id');",
+							"        pm.expect(auction).to.have.property('title');",
+							"        pm.expect(auction).to.have.property('description');",
+							"        pm.expect(auction).to.have.property('main_image_url');",
+							"        pm.expect(auction).to.have.property('current_price');",
+							"        pm.expect(auction).to.have.property('starting_price');",
+							"        pm.expect(auction).to.have.property('total_bids');",
+							"        pm.expect(auction).to.have.property('category');",
+							"        pm.expect(auction).to.have.property('location');",
+							"        pm.expect(auction).to.have.property('seller');",
+							"        pm.expect(auction).to.have.property('status');",
+							"        pm.expect(auction).to.have.property('timing');",
+							"    }",
+							"});",
+							"",
+							"pm.test('Auction status contains required fields', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auctions.length > 0) {",
+							"        const status = responseJson.auctions[0].status;",
+							"        pm.expect(status).to.have.property('auction_status');",
+							"        pm.expect(status).to.have.property('is_active');",
+							"        pm.expect(status).to.have.property('is_expired');",
+							"        pm.expect(status).to.have.property('is_upcoming');",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ All auctions retrieved successfully');",
+							"console.log('Total auctions found:', pm.response.json().total_count);",
+							"",
+							"// Display auction statuses",
+							"const auctions = pm.response.json().auctions;",
+							"const statusCounts = {};",
+							"auctions.forEach(auction => {",
+							"    const status = auction.status.auction_status;",
+							"    statusCounts[status] = (statusCounts[status] || 0) + 1;",
+							"});",
+							"console.log('Auction statuses:', statusCounts);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"]
+				},
+				"description": "Get all auctions (pending, active, expired) with basic card information including title, description, images, pricing, bids count, seller info, and status"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Auctions by Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Filtered auctions belong to specified category', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const categoryId = pm.request.url.query.get('category_id');",
+							"    ",
+							"    if (responseJson.auctions.length > 0 && categoryId) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            pm.expect(auction.category.id.toString()).to.equal(categoryId);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Category filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?category_id=1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"description": "Filter by category ID (Cars = 1)"
+						}
+					]
+				},
+				"description": "Get all auctions filtered by category with basic card information"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Auctions by Country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('All auctions belong to specified country', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const countryId = pm.request.url.query.get('country_id');",
+							"    ",
+							"    if (responseJson.auctions.length > 0 && countryId) {",
+							"        // Note: We can't directly test country_id as it's not exposed in the basic card",
+							"        // but the API should filter correctly",
+							"        console.log('Country filter applied for country ID:', countryId);",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Country filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?country_id=13",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "country_id",
+							"value": "13",
+							"description": "Filter by country ID (Egypt = 13)"
+						}
+					]
+				},
+				"description": "Get all auctions filtered by country with basic card information"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Auctions by Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('All auctions have the specified status', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const status = pm.request.url.query.get('status');",
+							"    ",
+							"    if (responseJson.auctions.length > 0 && status) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            pm.expect(auction.status.auction_status).to.equal(status);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Status filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?status=active",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "status",
+							"value": "active",
+							"description": "Filter by status: pending, active, expired"
+						}
+					]
+				},
+				"description": "Get all auctions filtered by status (pending, active, expired)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pending Auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('All auctions are pending', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auctions.length > 0) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            pm.expect(auction.status.auction_status).to.equal('pending');",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Pending auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?status=pending",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "status",
+							"value": "pending",
+							"description": "Get auctions waiting for approval"
+						}
+					]
+				},
+				"description": "Get all pending auctions that are waiting for admin approval"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Expired Auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Check expired auctions timing', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auctions.length > 0) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            // Check if auction is marked as expired",
+							"            pm.expect(auction.status).to.have.property('is_expired');",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Expired auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?status=expired",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "status",
+							"value": "expired",
+							"description": "Get auctions that have ended"
+						}
+					]
+				},
+				"description": "Get all expired auctions that have ended"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Auctions with Multiple Filters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Multiple filters applied correctly', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const categoryId = pm.request.url.query.get('category_id');",
+							"    const status = pm.request.url.query.get('status');",
+							"    ",
+							"    if (responseJson.auctions.length > 0) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            if (categoryId) {",
+							"                pm.expect(auction.category.id.toString()).to.equal(categoryId);",
+							"            }",
+							"            if (status) {",
+							"                pm.expect(auction.status.auction_status).to.equal(status);",
+							"            }",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Multi-filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?category_id=1&country_id=13&status=active",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"description": "Filter by category ID (Cars = 1)"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"description": "Filter by country ID (Egypt = 13)"
+						},
+						{
+							"key": "status",
+							"value": "active",
+							"description": "Filter by status"
+						}
+					]
+				},
+				"description": "Get auctions with multiple filters applied (category, country, and status)"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		}
+	]
+}

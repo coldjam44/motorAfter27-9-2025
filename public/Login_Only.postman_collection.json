@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "login-only-collection-2025",
+		"name": "Login Only - Motors App",
+		"description": "Simple collection with only login endpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.token) {",
+							"        pm.environment.set('jwt_token', responseJson.token);",
+							"        console.log('✅ JWT Token saved successfully');",
+							"        console.log('Token:', responseJson.token);",
+							"    } else if (responseJson.access_token) {",
+							"        pm.environment.set('jwt_token', responseJson.access_token);",
+							"        console.log('✅ JWT Token saved successfully');",
+							"        console.log('Token:', responseJson.access_token);",
+							"    } else {",
+							"        console.log('❌ No token found in response');",
+							"    }",
+							"} else {",
+							"    console.log('❌ Login failed');",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "azsystems@ajwaaalsallmah.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Aa123456789",
+							"type": "text"
+						},
+						{
+							"key": "remember_me",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": ["{{base_url}}"],
+					"path": ["api", "login"]
+				},
+				"description": "Login with email and password to get JWT token"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

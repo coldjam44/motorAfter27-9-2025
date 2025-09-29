@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "auction-create-only-2025",
+		"name": "Auction Creation Only",
+		"description": "Simple auction creation with duration-based system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Auction created successfully', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auction_id) {",
+							"        console.log('✅ Auction created successfully');",
+							"        console.log('Auction ID:', responseJson.auction_id);",
+							"        console.log('Ad ID:', responseJson.ad_id);",
+							"        console.log('Status: pending (waiting for admin approval)');",
+							"    }",
+							"} else {",
+							"    console.log('❌ Auction creation failed');",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer YOUR_JWT_TOKEN_HERE",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"type": "text"
+						},
+						{
+							"key": "city_id",
+							"value": "8",
+							"type": "text"
+						},
+						{
+							"key": "fields[0][category_field_id]",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "fields[0][category_field_value_id]",
+							"value": "251",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "Mercedes-Benz E-Class 2022 - Premium Luxury Sedan",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Stunning Mercedes-Benz E-Class 2022 in pristine condition. This luxury sedan features leather interior, panoramic sunroof, advanced safety systems, and premium sound system. Perfect for business executives or luxury car enthusiasts. Full service history available.",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "2000",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "01516843223",
+							"type": "text"
+						},
+						{
+							"key": "kilometer",
+							"value": "125323",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "New Administrative Capital - Diplomatic Quarter",
+							"type": "text"
+						},
+						{
+							"key": "car_model",
+							"value": "662",
+							"type": "text"
+						},
+						{
+							"key": "fields[1][category_field_id]",
+							"value": "41",
+							"type": "text"
+						},
+						{
+							"key": "fields[1][category_field_value_id]",
+							"value": "11818",
+							"type": "text"
+						},
+						{
+							"key": "fields[2][category_field_id]",
+							"value": "52",
+							"type": "text"
+						},
+						{
+							"key": "fields[2][category_field_value_id]",
+							"value": "322",
+							"type": "text"
+						},
+						{
+							"key": "car_options",
+							"value": "365,366,369,378,382,386,387,396,399,410",
+							"type": "text",
+							"description": "Car options: Leather Seats, Navigation, Camera, Bluetooth, Cruise Control, Heated Seats, Keyless Start, Sunroof, Premium Wheels, Touch Screen"
+						},
+						{
+							"key": "fields[3][category_field_id]",
+							"value": "53",
+							"type": "text"
+						},
+						{
+							"key": "fields[3][category_field_value_id]",
+							"value": "329",
+							"type": "text"
+						},
+						{
+							"key": "fields[4][category_field_id]",
+							"value": "54",
+							"type": "text"
+						},
+						{
+							"key": "fields[4][category_field_value_id]",
+							"value": "335",
+							"type": "text"
+						},
+						{
+							"key": "fields[5][category_field_id]",
+							"value": "55",
+							"type": "text"
+						},
+						{
+							"key": "fields[5][category_field_value_id]",
+							"value": "343",
+							"type": "text"
+						},
+						{
+							"key": "fields[6][category_field_id]",
+							"value": "56",
+							"type": "text"
+						},
+						{
+							"key": "fields[6][category_field_value_id]",
+							"value": "360",
+							"type": "text"
+						},
+						{
+							"key": "fields[7][category_field_id]",
+							"value": "57",
+							"type": "text"
+						},
+						{
+							"key": "fields[7][category_field_value_id]",
+							"value": "413",
+							"type": "text"
+						},
+						{
+							"key": "fields[8][category_field_id]",
+							"value": "58",
+							"type": "text"
+						},
+						{
+							"key": "fields[8][category_field_value_id]",
+							"value": "423",
+							"type": "text"
+						},
+						{
+							"key": "fields[9][category_field_id]",
+							"value": "59",
+							"type": "text"
+						},
+						{
+							"key": "fields[9][category_field_value_id]",
+							"value": "431",
+							"type": "text"
+						},
+						{
+							"key": "fields[10][category_field_id]",
+							"value": "60",
+							"type": "text"
+						},
+						{
+							"key": "fields[10][category_field_value_id]",
+							"value": "444",
+							"type": "text"
+						},
+						{
+							"key": "fields[11][category_field_id]",
+							"value": "61",
+							"type": "text"
+						},
+						{
+							"key": "fields[11][category_field_value_id]",
+							"value": "450",
+							"type": "text"
+						},
+						{
+							"key": "fields[12][category_field_id]",
+							"value": "62",
+							"type": "text"
+						},
+						{
+							"key": "fields[12][category_field_value_id]",
+							"value": "457",
+							"type": "text"
+						},
+						{
+							"key": "fields[13][category_field_id]",
+							"value": "63",
+							"type": "text"
+						},
+						{
+							"key": "fields[13][category_field_value_id]",
+							"value": "460",
+							"type": "text"
+						},
+						{
+							"key": "starting_price",
+							"value": "1750000",
+							"type": "text",
+							"description": "Starting bid price in EGP"
+						},
+						{
+							"key": "bid_increment",
+							"value": "25000",
+							"type": "text",
+							"description": "Minimum bid increment in EGP"
+						},
+						{
+							"key": "auction_duration_days",
+							"value": "10",
+							"type": "text",
+							"description": "Auction duration in days (1-365)"
+						},
+						{
+							"key": "main_image",
+							"type": "file",
+							"src": [],
+							"description": "Main car image"
+						},
+						{
+							"key": "sub_images[]",
+							"type": "file",
+							"src": [],
+							"description": "Additional car images"
+						},
+						{
+							"key": "reel_video",
+							"type": "file",
+							"src": [],
+							"description": "Reel video (MP4, AVI, MOV, QuickTime - Max 50MB)"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auctions/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "auction_duration_days",
+									"value": "7",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auctions/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auctions",
+								"create"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": true,\n    \"message\": \"تم إنشاء المزاد بنجاح وهو في انتظار موافقة الإدارة\",\n    \"auction_id\": 23,\n    \"ad_id\": 561,\n    \"auction_status\": \"pending\",\n    \"duration_hours\": 168,\n    \"note\": \"سيتم تحديد أوقات بداية ونهاية المزاد عند الموافقة من الإدارة\"\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		}
+	]
+}

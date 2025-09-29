@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
+use App\Models\CategoryFieldValue;
 
 class CategoryField extends Model
 {
@@ -16,7 +18,12 @@ class CategoryField extends Model
     }
 
     public function values()
-{
-    return $this->hasMany(CategoryFieldValue::class);
-}
+    {
+        return $this->hasMany(CategoryFieldValue::class);
+    }
+
+    public function fieldValues()
+    {
+        return $this->hasMany(CategoryFieldValue::class);
+    }
 }

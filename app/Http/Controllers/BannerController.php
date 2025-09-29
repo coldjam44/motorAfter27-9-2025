@@ -80,7 +80,7 @@ class BannerController extends Controller
 
 public function update(Request $request, $id)
 {
-    $banner = Banner::findOrFail($id);
+    $banner = banner::findOrFail($id);
 
     $request->validate([
         'image_ar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -122,7 +122,7 @@ public function update(Request $request, $id)
      */
     public function destroy($id)
 {
-    $banner = Banner::findOrFail($id);
+    $banner = banner::findOrFail($id);
 
     // حذف الصور من السيرفر
     if (file_exists(public_path('image_ar/' . $banner->image_ar))) {

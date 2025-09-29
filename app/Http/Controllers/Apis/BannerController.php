@@ -11,7 +11,7 @@ class BannerController extends Controller
 {
     public function index()
     {
-        $banners = Banner::all();
+        $banners = banner::all();
 
         $banners->transform(function ($banner) {
             $banner->image_ar = url('image_ar/' . $banner->image_ar);
@@ -69,7 +69,7 @@ class BannerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $banner = Banner::findOrFail($id);
+        $banner = banner::findOrFail($id);
 
         $request->validate([
             'image_ar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
@@ -121,7 +121,7 @@ class BannerController extends Controller
      */
     public function destroy($id)
     {
-        $banner = Banner::findOrFail($id);
+        $banner = banner::findOrFail($id);
 
         // حذف الصور من السيرفر
         $oldImageAr = public_path('image_ar/' . $banner->image_ar);

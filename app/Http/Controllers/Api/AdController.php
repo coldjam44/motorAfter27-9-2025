@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Ad;
 use App\Models\Userauth;
 use App\Models\Category;
-use App\Models\country;
+use App\Models\Country;
 use App\Models\city;
 use App\Models\CategoryFieldValue;
 use App\Models\Follower;
@@ -81,7 +81,14 @@ class AdController extends Controller
         }
 
         $reelVideoUrl = null;
+        // --- Reel Video Processing with Logging ---
         if ($request->hasFile('reel_video')) {
+    // Basic request file metadata logging
+    \Log::info('Reel upload detected', [
+        'original_name' => $request->file('reel_video')->getClientOriginalName(),
+        'size' => $request->file('reel_video')->getSize(),
+        'mime' => $request->file('reel_video')->getMimeType(),
+    ]);
     $reelVideo = $request->file('reel_video');
 
     // اسم فريد مع timestamp ورقم عشوائي
@@ -110,17 +117,21 @@ class AdController extends Controller
     $cmd1 = escapeshellcmd($ffmpegPath) . ' -i ' . escapeshellarg($originalPath)
         . ' -vf "scale=iw*0.75:ih*0.75" -c:v libx264 -preset fast -crf 28 -c:a aac -b:a 64k '
         . escapeshellarg($tempPath);
-    exec($cmd1, $out1, $ret1);
+    $out1 = [];$ret1 = null;
+    exec($cmd1 . ' 2>&1', $out1, $ret1);
 
     // تحويل لتنسيق Apple مع faststart (تسريع بدء التشغيل)
     $cmd2 = escapeshellcmd($ffmpegPath) . ' -i ' . escapeshellarg($tempPath)
         . ' -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 64k -ar 48000 -movflags +faststart '
         . escapeshellarg($compressedPath);
-    exec($cmd2, $out2, $ret2);
+    $out2 = [];$ret2 = null;
+    exec($cmd2 . ' 2>&1', $out2, $ret2);
 
-    // حذف الملفات المؤقتة
-    if (file_exists($tempPath)) unlink($tempPath);
-    if (file_exists($originalPath)) unlink($originalPath);
+    // حذف الملفات المؤقتة فقط بعد نجاح الضغط النهائي
+    if ($ret2 === 0 && file_exists($tempPath)) {
+        @unlink($tempPath);
+    }
+    // لا نحذف الملف الأصلي الآن؛ نحتاجه للفallback إذا فشل الضغط
 
     // إنشاء صورة مصغرة (thumbnail) من الفيديو المضغوط عند الثانية 1
     $thumbnailName = $finalBaseName . '_thumbnail.jpg';
@@ -129,18 +140,50 @@ class AdController extends Controller
         . ' -ss 00:00:01 -i ' . escapeshellarg($compressedPath)
         . ' -frames:v 1 -q:v 2 ' . escapeshellarg($thumbnailPath)
         . ' -y'; // -y لتجاوز تأكيد الكتابة
-    exec($cmdThumb, $outThumb, $retThumb);
+    $outThumb = [];$retThumb = null;
+    exec($cmdThumb . ' 2>&1', $outThumb, $retThumb);
 
     $reelVideoUrl = null;
     $thumbnailUrl = null;
 
     if ($ret2 === 0 && file_exists($compressedPath)) {
         $reelVideoUrl = 'reels/' . $compressedName;
+        // بعد النجاح نحذف الأصلي
+        if (file_exists($originalPath)) {
+            @unlink($originalPath);
+        }
+    } else {
+        \Log::warning('Reel compression failed, attempting fallback', [
+            'cmd1_ret' => $ret1, 'cmd2_ret' => $ret2,
+            'cmd1_out' => $out1, 'cmd2_out' => $out2,
+            'compressed_exists' => file_exists($compressedPath),
+        ]);
+        // استخدم الملف الأصلي كما هو (لا يزال موجود)
+        if (file_exists($originalPath)) {
+            $reelVideoUrl = 'reels/' . basename($originalPath); // _original.mp4
+        }
     }
 
     if ($retThumb === 0 && file_exists($thumbnailPath)) {
         $thumbnailUrl = 'reels/' . $thumbnailName;
+    } else {
+        \Log::warning('Thumbnail generation failed', [
+            'cmdThumb_ret' => $retThumb,
+            'cmdThumb_out' => $outThumb,
+            'thumbnail_exists' => file_exists($thumbnailPath),
+        ]);
     }
+
+    \Log::info('Reel processing summary', [
+        'video_final_url' => $reelVideoUrl,
+        'thumbnail_url' => $thumbnailUrl ?? null,
+        'cmd1' => $cmd1,
+        'cmd2' => $cmd2,
+        'cmdThumb' => $cmdThumb,
+        'ret1' => $ret1,
+        'ret2' => $ret2,
+        'retThumb' => $retThumb,
+    ]);
 }
 
 
@@ -360,24 +403,33 @@ class AdController extends Controller
                 continue;
             }
 
-            // لو الحقل من نوع select أو dropdown → نتوقع ID موجود
-            if ($categoryField->input_type === 'select') {
-                $categoryFieldValue = CategoryFieldValue::find($field['category_field_value_id']);
+            // دائماً نحاول استخدام CategoryFieldValue موجود بناءً على الـ ID المرسل
+            $categoryFieldValue = CategoryFieldValue::find($field['category_field_value_id']);
 
+            if (!$categoryFieldValue) {
+                // خريطة القيم البديلة للمراجع المكسورة
+                $fallbackMapping = [
+                    '251' => '13250',  // Model Year 1990
+                    '3' => '423',      // 3 Cylinders  
+                    '457' => '14527',  // Local License
+                    '460' => '14528',  // No Warranty
+                ];
+
+                // تحقق من وجود قيمة بديلة
+                $fallbackId = $fallbackMapping[$field['category_field_value_id']] ?? null;
+                
+                if ($fallbackId) {
+                    $categoryFieldValue = CategoryFieldValue::find($fallbackId);
+                }
+
+                // إذا لم نجد قيمة بديلة صالحة، إرجع خطأ
                 if (!$categoryFieldValue) {
                     return response()->json([
                         'message' => 'القيمة المحددة غير موجودة لهذا الحقل',
-                        'field_id' => $field['category_field_id']
+                        'field_id' => $field['category_field_id'],
+                        'field_value_id' => $field['category_field_value_id']
                     ], 422);
                 }
-            } else {
-                // حقل نصي → خزّن القيمة كـ نص حتى لو كانت رقم
-                $categoryFieldValue = CategoryFieldValue::firstOrCreate([
-                    'category_field_id' => $field['category_field_id'],
-                    'value_ar' => $field['category_field_value_id'],
-                    'value_en' => $field['category_field_value_id'],
-                    'field_type' => 'text',
-                ]);
             }
 
             AdFieldValue::create([
@@ -392,20 +444,38 @@ class AdController extends Controller
 
         // إضافة المميزات الخاصة بالإعلان إذا كانت موجودة
         if ($request->has('car_options') && !empty($request->car_options)) {
-            // تحويل النص المفصول بفواصل إلى مصفوفة، وتأكد من إزالة أي مسافات أو أقواس
-            $featureIds = explode(',', $request->car_options);
+            $raw = $request->car_options;
 
-            // استعراض كل ID في المصفوفة
+            // السماح بإرسالها كمصفوفة أو نص
+            if (is_array($raw)) {
+                // يمكن أن تكون مصفوفة IDs مباشرة أو مصفوفة قيم نصية مفصولة بفواصل
+                $pieces = [];
+                foreach ($raw as $entry) {
+                    if (is_numeric($entry)) {
+                        $pieces[] = $entry; // ID مباشر
+                    } elseif (is_string($entry)) {
+                        // قد يحتوي على "1,2,3" داخل عنصر واحد
+                        $subParts = array_filter(array_map('trim', explode(',', $entry)));
+                        foreach ($subParts as $sp) {
+                            if (is_numeric($sp)) $pieces[] = $sp;
+                        }
+                    }
+                }
+                $featureIds = $pieces;
+            } elseif (is_string($raw)) {
+                $featureIds = array_filter(array_map('trim', explode(',', $raw)));
+            } else {
+                $featureIds = [];
+            }
+
+            $featureIds = array_unique($featureIds);
+
             foreach ($featureIds as $featureId) {
-                // إزالة أي مسافات بيضاء أو أقواس حول الـ ID
-                $featureId = trim($featureId, " \t\n\r\0\x0B[]");
-
-                // التحقق من أن الـ ID هو قيمة صحيحة (عدد صحيح)
-                if (is_numeric($featureId)) {
-                    // إضافة الميزة للإعلان باستخدام الـ ID
+                $featureIdClean = trim($featureId, " \t\n\r\0\x0B[]");
+                if (is_numeric($featureIdClean)) {
                     AdFeature::create([
                         'car_ad_id' => $ad->id,
-                        'feature_id' => $featureId,
+                        'feature_id' => $featureIdClean,
                     ]);
                 }
             }
@@ -686,22 +756,33 @@ if ($request->hasFile('reel_video')) {
                     continue; // إذا الحقل غير موجود، تجاهله
                 }
 
-                if ($categoryField->input_type === 'select') {
-                    $categoryFieldValue = CategoryFieldValue::find($field['category_field_value_id']);
+                // دائماً نحاول استخدام CategoryFieldValue موجود بناءً على الـ ID المرسل
+                $categoryFieldValue = CategoryFieldValue::find($field['category_field_value_id']);
 
+                if (!$categoryFieldValue) {
+                    // خريطة القيم البديلة للمراجع المكسورة
+                    $fallbackMapping = [
+                        '251' => '13250',  // Model Year 1990
+                        '3' => '423',      // 3 Cylinders  
+                        '457' => '14527',  // Local License
+                        '460' => '14528',  // No Warranty
+                    ];
+
+                    // تحقق من وجود قيمة بديلة
+                    $fallbackId = $fallbackMapping[$field['category_field_value_id']] ?? null;
+                    
+                    if ($fallbackId) {
+                        $categoryFieldValue = CategoryFieldValue::find($fallbackId);
+                    }
+
+                    // إذا لم نجد قيمة بديلة صالحة، إرجع خطأ
                     if (!$categoryFieldValue) {
                         return response()->json([
                             'message' => 'القيمة المحددة غير موجودة لهذا الحقل',
-                            'field_id' => $field['category_field_id']
+                            'field_id' => $field['category_field_id'],
+                            'field_value_id' => $field['category_field_value_id']
                         ], 422);
                     }
-                } else {
-                    $categoryFieldValue = CategoryFieldValue::firstOrCreate([
-                        'category_field_id' => $field['category_field_id'],
-                        'value_ar' => $field['category_field_value_id'],
-                        'value_en' => $field['category_field_value_id'],
-                        'field_type' => 'text',
-                    ]);
                 }
 
                 AdFieldValue::create([
@@ -1027,7 +1108,7 @@ public function destroyadmin($id)
         $validFilters = [
             'category_id' => fn() => Category::where('id', $request->category_id)->exists(),
             'country_id'  => fn() => Country::where('id', $request->country_id)->exists(),
-            'city_id'     => fn() => City::where('id', $request->city_id)->exists(),
+            'city_id'     => fn() => city::where('id', $request->city_id)->exists(),
             'status'      => fn() => in_array($request->status, ['pending', 'approved', 'rejected']),
         ];
 
@@ -1131,8 +1212,15 @@ public function destroyadmin($id)
                     while (is_numeric($currentValueId) && $depth < $maxDepth) {
                         $realValue = \App\Models\CategoryFieldValue::find($currentValueId);
 
-                        if (!$realValue || $realValue->category_field_id != $fieldValue->category_field_id) {
-                            break; // خروج إذا القيمة غير موجودة أو الحقل مختلف
+                        if (!$realValue) {
+                            // القيمة غير موجودة - نعرض رسالة خطأ بدلاً من ID
+                            $valueAr = "قيمة مفقودة (ID: {$currentValueId})";
+                            $valueEn = "Missing value (ID: {$currentValueId})";
+                            break;
+                        }
+
+                        if ($realValue->category_field_id != $fieldValue->category_field_id) {
+                            break; // الحقل مختلف - نتوقف
                         }
 
                         $valueAr = $realValue->value_ar ?? $valueAr;
@@ -1766,8 +1854,15 @@ public function destroyadmin($id)
                     while (is_numeric($currentValueId) && $depth < $maxDepth) {
                         $realValue = \App\Models\CategoryFieldValue::find($currentValueId);
 
-                        if (!$realValue || $realValue->category_field_id != $fieldValue->category_field_id) {
+                        if (!$realValue) {
+                            // القيمة غير موجودة - نعرض رسالة خطأ بدلاً من ID
+                            $valueAr = "قيمة مفقودة (ID: {$currentValueId})";
+                            $valueEn = "Missing value (ID: {$currentValueId})";
                             break;
+                        }
+
+                        if ($realValue->category_field_id != $fieldValue->category_field_id) {
+                            break; // الحقل مختلف - نتوقف
                         }
 
                         $valueAr = $realValue->value_ar ?? $valueAr;
@@ -1946,8 +2041,15 @@ public function destroyadmin($id)
                         while (is_numeric($currentValueId) && $depth < $maxDepth) {
                             $realValue = \App\Models\CategoryFieldValue::find($currentValueId);
 
-                            // إذا ما فيش قيمة أو الحقل مختلف عن المطلوب نوقف
-                            if (!$realValue || $realValue->category_field_id != $fieldValue->category_field_id) {
+                            if (!$realValue) {
+                                // القيمة غير موجودة - نعرض رسالة خطأ بدلاً من ID
+                                $valueAr = "قيمة مفقودة (ID: {$currentValueId})";
+                                $valueEn = "Missing value (ID: {$currentValueId})";
+                                break;
+                            }
+
+                            // إذا الحقل مختلف عن المطلوب نوقف
+                            if ($realValue->category_field_id != $fieldValue->category_field_id) {
                                 break;
                             }
 

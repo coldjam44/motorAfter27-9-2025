@@ -204,3 +204,29 @@ Route::middleware('auth:api')->group(function () {
     Route::post('reels/{reelId}/increment-share', [ReelController::class, 'incrementShare']); // يحتاج توثيق
 });
 Route::get('/google/authenticate', [GoogleController::class, 'getLogindataUsingGoogleCode']);
+// ========== Auction Routes ==========
+use App\Http\Controllers\Api\AuctionController;
+
+Route::middleware('auth:api')->group(function () {
+    // إنشاء مزاد جديد
+    Route::post('/auctions/create', [AuctionController::class, 'createAuction']);
+    
+    // وضع مزايدة
+    Route::post('/auctions/{id}/bid', [AuctionController::class, 'placeBid']);
+    // bid now (auto minimum increment)
+    Route::post('/auctions/{id}/bid-now', [AuctionController::class, 'bidNow']);
+    
+    // تفعيل مزاد (للأدمن)
+    Route::patch('/auctions/{id}/activate', [AuctionController::class, 'activateAuction']);
+    
+    // جلب مزادات المستخدم
+    Route::get('/auctions/my-auctions', [AuctionController::class, 'myAuctions']);
+});
+
+// routes عامة للمزادات (لا تحتاج تسجيل دخول)
+Route::get('/auctions', [AuctionController::class, 'getAllAuctions']);
+Route::get('/auctions/active', [AuctionController::class, 'activeAuctions']);
+Route::get('/auctions/live', [AuctionController::class, 'liveAuctions']); // live includes sub_images
+Route::get('/auctions/{id}', [AuctionController::class, 'show']);
+Route::get('/auctions/{id}/full-details', [AuctionController::class, 'fullDetailsPage']);
+

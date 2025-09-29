@@ -163,6 +163,26 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'title' => 'العنوان',
+        'category' => 'الفئة',
+        'country' => 'الدولة',
+        'city' => 'المدينة',
+        'phone_number' => 'رقم الهاتف',
+        'description' => 'الوصف',
+        'price' => 'السعر',
+        'starting_price' => 'سعر البداية',
+        'address' => 'العنوان',
+        'kilometer' => 'الكيلومترات',
+        'car_model' => 'موديل السيارة',
+        'main_image' => 'الصورة الرئيسية',
+        'sub_images' => 'الصور الفرعية',
+        'start_time' => 'وقت البداية',
+        'end_time' => 'وقت النهاية',
+        'bid_increment' => 'زيادة العرض',
+    ],
+    
+    'please_fix_errors' => 'يرجى إصلاح الأخطاء التالية:',
+    'errors_occurred' => 'حدثت أخطاء:',
 
 ];

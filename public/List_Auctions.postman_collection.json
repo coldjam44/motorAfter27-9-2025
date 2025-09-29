@@ -1,0 +1,290 @@
+{
+	"info": {
+		"_postman_id": "list-auctions-2025",
+		"name": "List Auctions - Motors App",
+		"description": "Collection for listing active auctions with filtering options",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Active Auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has auctions array', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('auctions');",
+							"    pm.expect(responseJson.auctions).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('Each auction has required fields', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auctions.length > 0) {",
+							"        const auction = responseJson.auctions[0];",
+							"        pm.expect(auction).to.have.property('auction_data');",
+							"        pm.expect(auction).to.have.property('ad_data');",
+							"        pm.expect(auction).to.have.property('remaining_time');",
+							"        ",
+							"        // Check ad data structure",
+							"        const adData = auction.ad_data;",
+							"        pm.expect(adData).to.have.property('id');",
+							"        pm.expect(adData).to.have.property('title');",
+							"        pm.expect(adData).to.have.property('description');",
+							"        pm.expect(adData).to.have.property('main_image_url');",
+							"        pm.expect(adData).to.have.property('sub_images_urls');",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Active auctions retrieved successfully');",
+							"console.log('Total auctions found:', pm.response.json().auctions.length);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/active",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "active"]
+				},
+				"description": "Get all active auctions that are currently running"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active Auctions by Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Filtered auctions belong to specified category', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const categoryId = pm.request.url.query.get('category_id');",
+							"    ",
+							"    if (responseJson.auctions.length > 0 && categoryId) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            pm.expect(auction.ad_data.category.id.toString()).to.equal(categoryId);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Category filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/active?category_id=1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "active"],
+					"query": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"description": "Filter by category ID (Cars = 1)"
+						}
+					]
+				},
+				"description": "Get active auctions filtered by category (e.g., Cars category)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active Auctions by Country",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Filtered auctions belong to specified country', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const countryId = pm.request.url.query.get('country_id');",
+							"    ",
+							"    if (responseJson.auctions.length > 0 && countryId) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            pm.expect(auction.ad_data.country.id.toString()).to.equal(countryId);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Country filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/active?country_id=13",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "active"],
+					"query": [
+						{
+							"key": "country_id",
+							"value": "13",
+							"description": "Filter by country ID (Egypt = 13)"
+						}
+					]
+				},
+				"description": "Get active auctions filtered by country (e.g., Egypt)"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active Auctions with Multiple Filters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Filtered auctions match both category and country', function () {",
+							"    const responseJson = pm.response.json();",
+							"    const categoryId = pm.request.url.query.get('category_id');",
+							"    const countryId = pm.request.url.query.get('country_id');",
+							"    ",
+							"    if (responseJson.auctions.length > 0) {",
+							"        responseJson.auctions.forEach(auction => {",
+							"            if (categoryId) {",
+							"                pm.expect(auction.ad_data.category.id.toString()).to.equal(categoryId);",
+							"            }",
+							"            if (countryId) {",
+							"                pm.expect(auction.ad_data.country.id.toString()).to.equal(countryId);",
+							"            }",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"console.log('✅ Multi-filtered auctions retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/active?category_id=1&country_id=13",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "active"],
+					"query": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"description": "Filter by category ID (Cars = 1)"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"description": "Filter by country ID (Egypt = 13)"
+						}
+					]
+				},
+				"description": "Get active auctions filtered by both category and country"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single Auction Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response contains auction details', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('auction');",
+							"    pm.expect(responseJson.auction).to.have.property('id');",
+							"    pm.expect(responseJson.auction).to.have.property('ad_id');",
+							"});",
+							"",
+							"console.log('✅ Single auction details retrieved successfully');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "{{auction_id}}"]
+				},
+				"description": "Get details of a specific auction by ID"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		},
+		{
+			"key": "auction_id",
+			"value": "",
+			"type": "string",
+			"description": "ID of the auction to retrieve details for"
+		}
+	]
+}

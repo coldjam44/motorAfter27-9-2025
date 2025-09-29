@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "add-auction-only-2025",
+		"name": "Add Auction Only - Motors App",
+		"description": "Simple collection with only create auction endpoint",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Auction created successfully', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auction_id) {",
+							"        pm.environment.set('auction_id', responseJson.auction_id);",
+							"        pm.environment.set('ad_id', responseJson.ad_id);",
+							"        console.log('✅ Auction created successfully');",
+							"        console.log('Auction ID:', responseJson.auction_id);",
+							"        console.log('Ad ID:', responseJson.ad_id);",
+							"    }",
+							"} else {",
+							"    console.log('❌ Auction creation failed');",
+							"    console.log('Status:', pm.response.code);",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"type": "text"
+						},
+						{
+							"key": "city_id",
+							"value": "8",
+							"type": "text"
+						},
+						{
+							"key": "fields[0][category_field_id]",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "fields[0][category_field_value_id]",
+							"value": "251",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "مرسيدس C200 AMG Line 2021 - حالة ممتازة جداً",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "سيارة مرسيدس C200 AMG Line موديل 2021، مستعملة بحالة الوكالة تماماً. السيارة تم شراؤها من الوكيل الرسمي وتم عمل صيانة دورية منتظمة. جلد طبيعي، شاشة تعمل باللمس، نظام ملاحة، كاميرا خلفية، حساسات أمامية وخلفية، مقاعد كهربائية مع ذاكرة، تكييف أوتوماتيك منطقتين، إضاءة LED كاملة، عجلات AMG مقاس 18 بوصة. الفحص متاح قبل الشراء. السعر قابل للتفاوض البسيط للجادين فقط.",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "2850",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "01012345678",
+							"type": "text"
+						},
+						{
+							"key": "kilometer",
+							"value": "45000",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "التجمع الخامس - القاهرة الجديدة",
+							"type": "text"
+						},
+						{
+							"key": "car_model",
+							"value": "662",
+							"type": "text"
+						},
+						{
+							"key": "fields[1][category_field_id]",
+							"value": "41",
+							"type": "text"
+						},
+						{
+							"key": "fields[1][category_field_value_id]",
+							"value": "11818",
+							"type": "text"
+						},
+						{
+							"key": "fields[2][category_field_id]",
+							"value": "52",
+							"type": "text"
+						},
+						{
+							"key": "fields[2][category_field_value_id]",
+							"value": "322",
+							"type": "text"
+						},
+						{
+							"key": "car_options",
+							"value": "[]",
+							"type": "text"
+						},
+						{
+							"key": "fields[3][category_field_id]",
+							"value": "53",
+							"type": "text"
+						},
+						{
+							"key": "fields[3][category_field_value_id]",
+							"value": "329",
+							"type": "text"
+						},
+						{
+							"key": "fields[4][category_field_id]",
+							"value": "54",
+							"type": "text"
+						},
+						{
+							"key": "fields[4][category_field_value_id]",
+							"value": "335",
+							"type": "text"
+						},
+						{
+							"key": "fields[5][category_field_id]",
+							"value": "55",
+							"type": "text"
+						},
+						{
+							"key": "fields[5][category_field_value_id]",
+							"value": "343",
+							"type": "text"
+						},
+						{
+							"key": "fields[6][category_field_id]",
+							"value": "56",
+							"type": "text"
+						},
+						{
+							"key": "fields[6][category_field_value_id]",
+							"value": "360",
+							"type": "text"
+						},
+						{
+							"key": "fields[7][category_field_id]",
+							"value": "57",
+							"type": "text"
+						},
+						{
+							"key": "fields[7][category_field_value_id]",
+							"value": "413",
+							"type": "text"
+						},
+						{
+							"key": "fields[8][category_field_id]",
+							"value": "58",
+							"type": "text"
+						},
+						{
+							"key": "fields[8][category_field_value_id]",
+							"value": "423",
+							"type": "text"
+						},
+						{
+							"key": "fields[9][category_field_id]",
+							"value": "59",
+							"type": "text"
+						},
+						{
+							"key": "fields[9][category_field_value_id]",
+							"value": "431",
+							"type": "text"
+						},
+						{
+							"key": "fields[10][category_field_id]",
+							"value": "60",
+							"type": "text"
+						},
+						{
+							"key": "fields[10][category_field_value_id]",
+							"value": "444",
+							"type": "text"
+						},
+						{
+							"key": "fields[11][category_field_id]",
+							"value": "61",
+							"type": "text"
+						},
+						{
+							"key": "fields[11][category_field_value_id]",
+							"value": "450",
+							"type": "text"
+						},
+						{
+							"key": "fields[12][category_field_id]",
+							"value": "62",
+							"type": "text"
+						},
+						{
+							"key": "fields[12][category_field_value_id]",
+							"value": "457",
+							"type": "text"
+						},
+						{
+							"key": "fields[13][category_field_id]",
+							"value": "63",
+							"type": "text"
+						},
+						{
+							"key": "fields[13][category_field_value_id]",
+							"value": "460",
+							"type": "text"
+						},
+						{
+							"key": "starting_price",
+							"value": "2400000",
+							"type": "text"
+						},
+						{
+							"key": "auction_duration_days",
+							"value": "5",
+							"type": "text",
+							"description": "Duration of auction in days (e.g., 5 days, 55 days)"
+						},
+						{
+							"key": "bid_increment",
+							"value": "100000",
+							"type": "text"
+						},
+						{
+							"key": "main_image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "sub_images",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auctions/create",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "create"]
+				},
+				"description": "Create a new auction - requires JWT token"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auction_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ad_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

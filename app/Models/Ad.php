@@ -5,6 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CarModel;
+use App\Models\Country;
+use App\Models\city;
+use App\Models\Userauth;
+use App\Models\Category;
+use App\Models\AdImage;
+use App\Models\AdView;
+use App\Models\AdFieldValue;
+use App\Models\AdFeature;
+use App\Models\Reel;
 
 class Ad extends Model
 {
@@ -67,7 +76,7 @@ class Ad extends Model
 
     public function city()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(city::class);
     }
 
     public function images()

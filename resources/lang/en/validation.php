@@ -160,6 +160,26 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'title' => 'Title',
+        'category' => 'Category', 
+        'country' => 'Country',
+        'city' => 'City',
+        'phone_number' => 'Phone Number',
+        'description' => 'Description',
+        'price' => 'Price',
+        'starting_price' => 'Starting Price',
+        'address' => 'Address',
+        'kilometer' => 'Kilometers',
+        'car_model' => 'Car Model',
+        'main_image' => 'Main Image',
+        'sub_images' => 'Sub Images',
+        'start_time' => 'Start Time',
+        'end_time' => 'End Time',
+        'bid_increment' => 'Bid Increment',
+    ],
+    
+    'please_fix_errors' => 'Please fix the following errors:',
+    'errors_occurred' => 'Errors Occurred:',
 
 ];

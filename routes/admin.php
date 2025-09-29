@@ -58,6 +58,26 @@ Route::group(
                  * End Home Routes
                  * -------------------------------------------------
                  */
+
+                /**
+                 * -------------------------------------------------
+                 * Start Auction Routes
+                 * -------------------------------------------------
+                 */
+
+                    Route::prefix('auctions')->name('auctions.')->group(function(){
+                        Route::get('/create', [App\Http\Controllers\Admin\Auction\AuctionController::class,'create'])->name('create');
+                        Route::post('/store', [App\Http\Controllers\Admin\Auction\AuctionController::class,'store'])->name('store');
+                        Route::get('/cities/{country_id}', [App\Http\Controllers\Admin\Auction\AuctionController::class,'getCitiesByCountry'])->name('cities');
+                        Route::get('/field-values/{field_id}', [App\Http\Controllers\Admin\Auction\AuctionController::class,'getFieldValues'])->name('field_values');
+                        Route::get('/car-models/{category_id}', [App\Http\Controllers\Admin\Auction\AuctionController::class,'getCarModelsByCategory'])->name('car_models');
+                    });
+
+                /**
+                 * -------------------------------------------------
+                 * End Auction Routes
+                 * -------------------------------------------------
+                 */
             });
 
         });

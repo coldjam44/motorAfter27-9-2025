@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "Auction Full Details Collection",
+    "_postman_id": "auction-full-details-2025",
+    "description": "Collection for getting complete auction details page data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Auction Full Details",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has success property', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('success');",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "});",
+              "",
+              "pm.test('Response contains page_data', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('page_data');",
+              "    pm.expect(jsonData.page_data).to.have.property('auction_info');",
+              "    pm.expect(jsonData.page_data).to.have.property('images');",
+              "    pm.expect(jsonData.page_data).to.have.property('specifications');",
+              "    pm.expect(jsonData.page_data).to.have.property('seller');",
+              "    pm.expect(jsonData.page_data).to.have.property('location');",
+              "    pm.expect(jsonData.page_data).to.have.property('bidding_history');",
+              "});",
+              "",
+              "pm.test('Auction info contains required fields', function () {",
+              "    const jsonData = pm.response.json();",
+              "    const auctionInfo = jsonData.page_data.auction_info;",
+              "    pm.expect(auctionInfo).to.have.property('current_price');",
+              "    pm.expect(auctionInfo).to.have.property('next_minimum_bid');",
+              "    pm.expect(auctionInfo).to.have.property('total_bids');",
+              "    pm.expect(auctionInfo).to.have.property('remaining_time');",
+              "    pm.expect(auctionInfo).to.have.property('is_active');",
+              "});",
+              "",
+              "// Log auction details for debugging",
+              "const responseJson = pm.response.json();",
+              "if (responseJson.success) {",
+              "    const auction = responseJson.page_data.auction_info;",
+              "    console.log('✅ Auction Details Retrieved Successfully!');",
+              "    console.log('Lot Number:', responseJson.lot_number);",
+              "    console.log('Title:', auction.title);",
+              "    console.log('Current Price:', auction.current_price, auction.currency);",
+              "    console.log('Total Bids:', auction.total_bids);",
+              "    console.log('Is Active:', auction.is_active);",
+              "    console.log('Next Minimum Bid:', auction.next_minimum_bid);",
+              "    ",
+              "    if (auction.remaining_time && !auction.remaining_time.expired) {",
+              "        console.log('Time Remaining:', auction.remaining_time.days + 'd ' + auction.remaining_time.hours + 'h ' + auction.remaining_time.minutes + 'm');",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/auctions/{{auction_id}}/full-details",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "api",
+            "auctions",
+            "{{auction_id}}",
+            "full-details"
+          ]
+        },
+        "description": "Get complete auction details including:\n- Auction info (prices, timing, status)\n- Image gallery (main + sub images)\n- Vehicle specifications\n- Seller information\n- Location details\n- Bidding history\n- Additional information\n\n**No authentication required**\n\nThis endpoint provides all data needed for the auction details page."
+      },
+      "response": [
+        {
+          "name": "Successful Response Example",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auctions/19/full-details",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "auctions",
+                "19",
+                "full-details"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"auction_id\": 19,\n    \"lot_number\": \"Lot#013028\",\n    \"page_data\": {\n        \"auction_info\": {\n            \"id\": 19,\n            \"lot_number\": \"Lot#013028\",\n            \"title\": \"سيارة BMW للمزاد - اختبار\",\n            \"current_price\": \"3000.00\",\n            \"starting_price\": \"1800.00\",\n            \"min_increment\": \"50.00\",\n            \"next_minimum_bid\": 3050,\n            \"total_bids\": 2,\n            \"remaining_time\": {\n                \"expired\": false,\n                \"days\": 2,\n                \"hours\": 7,\n                \"minutes\": 7,\n                \"seconds\": 13\n            },\n            \"is_active\": true,\n            \"status\": \"active\",\n            \"currency\": \"دينار أردني\"\n        },\n        \"images\": {\n            \"main_image\": \"https://testsites.azsystems.tech/ads/1759072959_erik-mclean-ZRns2R5azu0-unsplash.jpg\",\n            \"sub_images\": [\n                {\n                    \"id\": 1129,\n                    \"image\": \"ads/sub_1759072960_olav-tvedt-6lSBynPRaAQ-unsplash.jpg\",\n                    \"url\": \"https://testsites.azsystems.tech/ads/sub_1759072960_olav-tvedt-6lSBynPRaAQ-unsplash.jpg\"\n                }\n            ]\n        },\n        \"specifications\": [\n            {\n                \"field_id\": 1,\n                \"field_name\": {\n                    \"ar\": \"سنة الطراز\",\n                    \"en\": \"Model Year\"\n                },\n                \"field_value\": {\n                    \"ar\": \"1990\",\n                    \"en\": \"1990\"\n                }\n            }\n        ],\n        \"seller\": {\n            \"id\": 101,\n            \"name\": \"admin mustafa\",\n            \"profile_image\": \"https://testsites.azsystems.tech/profile_images/1755153460_profile.png\",\n            \"phone\": \"01516843223\"\n        },\n        \"location\": {\n            \"address\": \"القاهرة - مدينة نصر\",\n            \"city\": \"عمّان\",\n            \"country\": \"الأردن\"\n        },\n        \"bidding_history\": [\n            {\n                \"id\": 7,\n                \"amount\": \"3000.00\",\n                \"user_name\": \"Test Bidder\",\n                \"user_avatar\": null,\n                \"created_at\": \"2025-09-29 10:36:17\",\n                \"is_highest\": true\n            }\n        ],\n        \"additional_info\": {\n            \"description\": \"سيارة BMW نظيفة وبحالة ممتازة للمزاد\",\n            \"kilometers\": \"125323\",\n            \"category\": {\n                \"id\": 1,\n                \"name_ar\": \"سيارات\",\n                \"name_en\": \"Cars\"\n            }\n        }\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Auction Full Details (Not Found)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404 for non-existent auction', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response contains error message', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('message');",
+              "    pm.expect(jsonData.message).to.include('المزاد غير موجود');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{BASE_URL}}/api/auctions/99999/full-details",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "api",
+            "auctions",
+            "99999",
+            "full-details"
+          ]
+        },
+        "description": "Test case for non-existent auction ID"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "https://testsites.azsystems.tech",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "auction_id",
+      "value": "19",
+      "type": "string",
+      "description": "ID of the auction to get full details for"
+    }
+  ]
+}

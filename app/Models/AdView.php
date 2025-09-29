@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Userauth;
+use App\Models\Ad;
 
 class AdView extends Model
 {
@@ -13,7 +15,7 @@ class AdView extends Model
 
     public function user()
     {
-        return $this->belongsTo(userauth::class);
+        return $this->belongsTo(Userauth::class);
     }
 
     public function ad()

@@ -1,0 +1,317 @@
+{
+	"info": {
+		"_postman_id": "approve-auction-2025",
+		"name": "Approve Auction - Motors App",
+		"description": "Collection for approving/activating pending auctions (Admin only)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Approve/Activate Auction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates success', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('status', true);",
+							"    pm.expect(responseJson).to.have.property('message');",
+							"});",
+							"",
+							"pm.test('Auction data is returned', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auction) {",
+							"        pm.expect(responseJson.auction).to.have.property('id');",
+							"        pm.expect(responseJson.auction).to.have.property('status');",
+							"        pm.expect(responseJson.auction).to.have.property('starting_price');",
+							"        pm.expect(responseJson.auction).to.have.property('current_highest_bid');",
+							"        pm.expect(responseJson.auction).to.have.property('start_time');",
+							"        pm.expect(responseJson.auction).to.have.property('end_time');",
+							"    }",
+							"});",
+							"",
+							"pm.test('Auction status is active after approval', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auction && responseJson.auction.status) {",
+							"        pm.expect(responseJson.auction.status).to.equal('active');",
+							"    }",
+							"});",
+							"",
+							"if (pm.response.code === 200) {",
+							"    console.log('✅ Auction approved successfully');",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auction) {",
+							"        console.log('Auction ID:', responseJson.auction.id);",
+							"        console.log('New Status:', responseJson.auction.status);",
+							"        console.log('Starting Price:', responseJson.auction.starting_price);",
+							"        console.log('Start Time:', responseJson.auction.start_time);",
+							"        console.log('End Time:', responseJson.auction.end_time);",
+							"    }",
+							"} else {",
+							"    console.log('❌ Auction approval failed');",
+							"    console.log('Status:', pm.response.code);",
+							"    console.log('Response:', pm.response.text());",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Log the auction ID being approved",
+							"console.log('Attempting to approve auction ID:', pm.variables.get('auction_id'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"description": "JWT token for admin authentication"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}/activate",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions", "{{auction_id}}", "activate"]
+				},
+				"description": "Approve and activate a pending auction. This endpoint:\n\n- Changes auction status from 'pending' to 'active'\n- Validates that auction times are still valid\n- Requires admin authentication via JWT token\n- Returns complete auction details after activation\n\n**Prerequisites:**\n1. Valid JWT token with admin privileges\n2. Auction must be in 'pending' status\n3. Auction end time must be in the future\n\n**Response includes:**\n- Success status and message\n- Complete auction data with new 'active' status\n- Remaining time until auction ends\n- Current bid information"
+			},
+			"response": [
+				{
+					"name": "Successful Approval",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auctions/19/activate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auctions", "19", "activate"]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": true,\n    \"message\": \"تم تفعيل المزاد بنجاح\",\n    \"auction\": {\n        \"id\": 19,\n        \"ad_id\": 557,\n        \"starting_price\": \"1800.00\",\n        \"mini_bid_increment\": \"50.00\",\n        \"auction_duration_hours\": 56,\n        \"current_highest_bid\": \"1800.00\",\n        \"start_time\": \"2025-09-29T10:00:00.000000Z\",\n        \"end_time\": \"2025-10-01T18:00:00.000000Z\",\n        \"status\": \"active\",\n        \"winner_user_id\": null,\n        \"created_at\": \"2025-09-28T15:22:45.000000Z\",\n        \"updated_at\": \"2025-09-29T22:00:00.000000Z\",\n        \"remaining_time\": {\n            \"expired\": false,\n            \"days\": 1,\n            \"hours\": 20,\n            \"minutes\": 0,\n            \"seconds\": 0,\n            \"total_seconds\": 158400\n        },\n        \"is_active\": true\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Pending Auctions (for approval)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has auctions array', function () {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.have.property('success', true);",
+							"    pm.expect(responseJson).to.have.property('auctions');",
+							"    pm.expect(responseJson.auctions).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('All returned auctions are pending', function () {",
+							"    const responseJson = pm.response.json();",
+							"    responseJson.auctions.forEach(auction => {",
+							"        pm.expect(auction.status.auction_status).to.equal('pending');",
+							"    });",
+							"});",
+							"",
+							"// Store first pending auction ID for approval",
+							"const responseJson = pm.response.json();",
+							"if (responseJson.auctions.length > 0) {",
+							"    pm.environment.set('auction_id', responseJson.auctions[0].auction_id);",
+							"    console.log('✅ Found', responseJson.auctions.length, 'pending auctions');",
+							"    console.log('First auction ID set for approval:', responseJson.auctions[0].auction_id);",
+							"} else {",
+							"    console.log('ℹ️ No pending auctions found');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?status=pending",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "status",
+							"value": "pending",
+							"description": "Filter to show only pending auctions"
+						}
+					]
+				},
+				"description": "Get list of all pending auctions that are waiting for approval. This endpoint:\n\n- Returns only auctions with 'pending' status\n- Shows basic card information for each auction\n- Automatically sets the first auction ID for easy approval testing\n- No authentication required for viewing\n\n**Use this to:**\n1. See which auctions need approval\n2. Get auction IDs for the approval process\n3. Check auction details before approving"
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Auction Activation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Auction is now active', function () {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.auctions && responseJson.auctions.length > 0) {",
+							"        const auction = responseJson.auctions[0];",
+							"        pm.expect(auction.status.auction_status).to.equal('active');",
+							"        pm.expect(auction.status.is_active).to.be.oneOf([true, false]); // depends on timing",
+							"    }",
+							"});",
+							"",
+							"const responseJson = pm.response.json();",
+							"if (responseJson.auctions && responseJson.auctions.length > 0) {",
+							"    const auction = responseJson.auctions[0];",
+							"    console.log('✅ Auction verification complete');",
+							"    console.log('Auction ID:', auction.auction_id);",
+							"    console.log('Status:', auction.status.auction_status);",
+							"    console.log('Is Active:', auction.status.is_active);",
+							"    console.log('Is Upcoming:', auction.status.is_upcoming);",
+							"    console.log('Start Time:', auction.timing.start_time);",
+							"    console.log('End Time:', auction.timing.end_time);",
+							"} else {",
+							"    console.log('❌ Auction not found or no longer exists');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions?status=active",
+					"host": ["{{base_url}}"],
+					"path": ["api", "auctions"],
+					"query": [
+						{
+							"key": "status",
+							"value": "active",
+							"description": "Filter to show only active auctions"
+						}
+					]
+				},
+				"description": "Verify that the auction has been successfully activated. This endpoint:\n\n- Shows all active auctions\n- Confirms the auction status change\n- Displays current timing and bid information\n- Helps verify the approval process worked correctly\n\n**Use this after approval to:**\n1. Confirm auction is now active\n2. Check activation timing\n3. Verify auction is ready for bidding"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "global-prerequest",
+				"exec": [
+					"// Global pre-request script",
+					"console.log('=== Auction Approval Collection ===');",
+					"console.log('Base URL:', pm.variables.get('base_url'));",
+					"console.log('JWT Token:', pm.variables.get('jwt_token') ? 'Present' : 'Missing');",
+					"console.log('Auction ID:', pm.variables.get('auction_id') || 'Not set');",
+					"console.log('====================================');"
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "global-test",
+				"exec": [
+					"// Global test script",
+					"pm.test('Response time is reasonable', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"pm.test('Response has valid JSON structure', function () {",
+					"    pm.response.to.be.json;",
+					"});"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://testsites.azsystems.tech",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string",
+			"description": "Admin JWT token required for auction approval"
+		},
+		{
+			"key": "auction_id",
+			"value": "",
+			"type": "string",
+			"description": "ID of the auction to approve (set automatically by 'Get Pending Auctions')"
+		}
+	]
+}

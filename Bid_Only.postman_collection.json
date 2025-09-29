@@ -1,0 +1,123 @@
+{
+  "info": {
+    "name": "Bid Only Collection",
+    "_postman_id": "bid-only-collection-2025",
+    "description": "Collection containing only the Place Bid endpoint for auctions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Place Bid",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Check if JWT Token exists",
+              "const token = pm.environment.get('jwt_token');",
+              "if (!token) {",
+              "    console.warn('⚠️ JWT Token not found. Please login first.');",
+              "} else {",
+              "    console.log('✅ JWT Token found, proceeding with bid');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Bid placed successfully', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response contains bid data', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('message');",
+              "    pm.expect(jsonData).to.have.property('bid');",
+              "    pm.expect(jsonData).to.have.property('new_current_price');",
+              "    pm.expect(jsonData).to.have.property('total_bids');",
+              "});",
+              "",
+              "// Log bid result",
+              "if (pm.response.code === 201) {",
+              "    const responseJson = pm.response.json();",
+              "    console.log('✅ Bid placed successfully!');",
+              "    console.log('New current price:', responseJson.new_current_price);",
+              "    console.log('Total bids:', responseJson.total_bids);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "bid_amount",
+              "value": "{{bid_amount}}",
+              "description": "Amount to bid (must be higher than current price + increment)",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/auctions/{{auction_id}}/bid",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "api",
+            "auctions",
+            "{{auction_id}}",
+            "bid"
+          ]
+        },
+        "description": "Place a bid on an auction. User must specify the bid amount manually.\n\n**Required:**\n- JWT Token (from login)\n- auction_id (auction to bid on)\n- bid_amount (must be higher than current price + increment)\n\n**Restrictions:**\n- Cannot bid on your own auction\n- Auction must be active\n- Bid amount must respect minimum increment"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "https://testsites.azsystems.tech",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT Token for authentication (set from login)"
+    },
+    {
+      "key": "auction_id",
+      "value": "1",
+      "type": "string",
+      "description": "ID of the auction to bid on"
+    },
+    {
+      "key": "bid_amount",
+      "value": "2000",
+      "type": "string",
+      "description": "Amount to bid (user enters manually)"
+    }
+  ]
+}

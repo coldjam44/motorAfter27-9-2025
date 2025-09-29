@@ -1,0 +1,673 @@
+{
+	"info": {
+		"_postman_id": "auction-test-collection-2025",
+		"name": "Auction API Test Collection",
+		"description": "مجموعة اختبارات API للمزادات - Motors App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Auction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// تأكد من وجود JWT Token في متغيرات البيئة",
+							"console.log('JWT Token:', pm.environment.get('jwt_token'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Response has auction data', function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('ad_id');",
+							"    pm.expect(jsonData).to.have.property('auction_id');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"});",
+							"",
+							"// حفظ معرف المزاد للاختبارات اللاحقة",
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.environment.set('auction_id', responseJson.auction_id);",
+							"    pm.environment.set('ad_id', responseJson.ad_id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"type": "text"
+						},
+						{
+							"key": "city_id",
+							"value": "8",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "سيارة للمزاد - اختبار",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "سيارة نظيفة للمزاد - اختبار API",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "2000",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "01516843223",
+							"type": "text"
+						},
+						{
+							"key": "kilometer",
+							"value": "125323",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "القاهرة - مصر",
+							"type": "text"
+						},
+						{
+							"key": "car_model",
+							"value": "662",
+							"type": "text"
+						},
+						{
+							"key": "fields[0][category_field_id]",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "fields[0][category_field_value_id]",
+							"value": "251",
+							"type": "text"
+						},
+						{
+							"key": "fields[1][category_field_id]",
+							"value": "41",
+							"type": "text"
+						},
+						{
+							"key": "fields[1][category_field_value_id]",
+							"value": "11818",
+							"type": "text"
+						},
+						{
+							"key": "fields[2][category_field_id]",
+							"value": "52",
+							"type": "text"
+						},
+						{
+							"key": "fields[2][category_field_value_id]",
+							"value": "322",
+							"type": "text"
+						},
+						{
+							"key": "fields[3][category_field_id]",
+							"value": "53",
+							"type": "text"
+						},
+						{
+							"key": "fields[3][category_field_value_id]",
+							"value": "329",
+							"type": "text"
+						},
+						{
+							"key": "fields[4][category_field_id]",
+							"value": "54",
+							"type": "text"
+						},
+						{
+							"key": "fields[4][category_field_value_id]",
+							"value": "335",
+							"type": "text"
+						},
+						{
+							"key": "fields[5][category_field_id]",
+							"value": "55",
+							"type": "text"
+						},
+						{
+							"key": "fields[5][category_field_value_id]",
+							"value": "343",
+							"type": "text"
+						},
+						{
+							"key": "fields[6][category_field_id]",
+							"value": "56",
+							"type": "text"
+						},
+						{
+							"key": "fields[6][category_field_value_id]",
+							"value": "360",
+							"type": "text"
+						},
+						{
+							"key": "fields[7][category_field_id]",
+							"value": "57",
+							"type": "text"
+						},
+						{
+							"key": "fields[7][category_field_value_id]",
+							"value": "413",
+							"type": "text"
+						},
+						{
+							"key": "fields[8][category_field_id]",
+							"value": "58",
+							"type": "text"
+						},
+						{
+							"key": "fields[8][category_field_value_id]",
+							"value": "423",
+							"type": "text"
+						},
+						{
+							"key": "fields[9][category_field_id]",
+							"value": "59",
+							"type": "text"
+						},
+						{
+							"key": "fields[9][category_field_value_id]",
+							"value": "431",
+							"type": "text"
+						},
+						{
+							"key": "fields[10][category_field_id]",
+							"value": "60",
+							"type": "text"
+						},
+						{
+							"key": "fields[10][category_field_value_id]",
+							"value": "444",
+							"type": "text"
+						},
+						{
+							"key": "fields[11][category_field_id]",
+							"value": "61",
+							"type": "text"
+						},
+						{
+							"key": "fields[11][category_field_value_id]",
+							"value": "450",
+							"type": "text"
+						},
+						{
+							"key": "fields[12][category_field_id]",
+							"value": "62",
+							"type": "text"
+						},
+						{
+							"key": "fields[12][category_field_value_id]",
+							"value": "457",
+							"type": "text"
+						},
+						{
+							"key": "fields[13][category_field_id]",
+							"value": "63",
+							"type": "text"
+						},
+						{
+							"key": "fields[13][category_field_value_id]",
+							"value": "460",
+							"type": "text"
+						},
+						{
+							"key": "car_options",
+							"value": "[]",
+							"type": "text"
+						},
+						{
+							"key": "starting_price",
+							"value": "1800",
+							"description": "سعر البداية للمزاد",
+							"type": "text"
+						},
+						{
+							"key": "reserve_price",
+							"value": "2200",
+							"description": "السعر المحجوز (الحد الأدنى للبيع)",
+							"type": "text"
+						},
+						{
+							"key": "auction_duration_days",
+							"value": "3",
+							"description": "مدة المزاد بالأيام (1-365)",
+							"type": "text"
+						},
+						{
+							"key": "bid_increment",
+							"value": "50",
+							"description": "الحد الأدنى لزيادة المزايدة",
+							"type": "text"
+						},
+						{
+							"key": "auto_extend",
+							"value": "true",
+							"description": "تمديد تلقائي عند المزايدة في آخر دقائق",
+							"type": "text"
+						},
+						{
+							"key": "extend_minutes",
+							"value": "5",
+							"description": "عدد دقائق التمديد التلقائي",
+							"type": "text"
+						},
+						{
+							"key": "main_image",
+							"description": "صورة رئيسية للسيارة (يجب رفع صورة هنا)",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auctions/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"create"
+					]
+				},
+				"description": "إنشاء مزاد جديد مع جميع البيانات المطلوبة"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active Auctions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has auctions array', function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('auctions');",
+							"    pm.expect(jsonData.auctions).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/active?category_id=1&country_id=13",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"active"
+					],
+					"query": [
+						{
+							"key": "category_id",
+							"value": "1",
+							"description": "فلترة حسب التصنيف"
+						},
+						{
+							"key": "country_id",
+							"value": "13",
+							"description": "فلترة حسب الدولة"
+						}
+					]
+				},
+				"description": "عرض جميع المزادات النشطة مع إمكانية الفلترة"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Auction Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has auction details', function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('auction');",
+							"    pm.expect(jsonData).to.have.property('remaining_time');",
+							"    pm.expect(jsonData).to.have.property('is_active');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"{{auction_id}}"
+					]
+				},
+				"description": "عرض تفاصيل مزاد محدد"
+			},
+			"response": []
+		},
+		{
+			"name": "Place Bid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Bid placed successfully', function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('bid');",
+							"    pm.expect(jsonData).to.have.property('new_current_price');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"bid_amount\": 1900\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}/bid",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"{{auction_id}}",
+						"bid"
+					]
+				},
+				"description": "وضع مزايدة جديدة على المزاد"
+			},
+			"response": []
+		},
+		{
+			"name": "Login (Get JWT Token)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login successful', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// حفظ JWT Token في متغيرات البيئة",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    if (responseJson.access_token) {",
+							"        pm.environment.set('jwt_token', responseJson.access_token);",
+							"        console.log('JWT Token saved:', responseJson.access_token);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"your-email@example.com\",\n    \"password\": \"your-password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "تسجيل الدخول للحصول على JWT Token"
+			},
+			"response": []
+		},
+		{
+			"name": "Activate Auction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// تأكد من وجود JWT Token",
+							"console.log('JWT Token:', pm.environment.get('jwt_token'));",
+							"console.log('Auction ID:', pm.environment.get('auction_id'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates success', function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('status', true);",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('auction');",
+							"});",
+							"",
+							"pm.test('Auction status is active', function () {",
+							"    const jsonData = pm.response.json();",
+							"    if (jsonData.auction) {",
+							"        pm.expect(jsonData.auction.status).to.eql('active');",
+							"    }",
+							"});",
+							"",
+							"// عرض تفاصيل المزاد المفعل",
+							"if (pm.response.code === 200) {",
+							"    const responseJson = pm.response.json();",
+							"    console.log('تم تفعيل المزاد:', responseJson);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/auctions/{{auction_id}}/activate",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"auctions",
+						"{{auction_id}}",
+						"activate"
+					]
+				},
+				"description": "تفعيل مزاد من حالة pending إلى active (للأدمن فقط)"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://testsites.azsystems.tech",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auction_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ad_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

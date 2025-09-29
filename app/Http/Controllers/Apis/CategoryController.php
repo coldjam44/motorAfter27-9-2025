@@ -161,7 +161,7 @@ public function index()
      */
     public function destroy($id)
     {
-        $category = category::findOrFail($id);
+        $category = Category::findOrFail($id);
 
         $imagePath = public_path('categorys/' . $category->image);
         if (File::exists($imagePath)) {
