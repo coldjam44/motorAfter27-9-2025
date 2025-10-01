@@ -19,7 +19,17 @@ class GoogleController extends Controller
 {
     public function googlepage()
     {
-        return Socialite::driver('google')->redirect();
+        // طريقة أبسط: استخدام Socialite مع تعديل URL
+        $redirectUrl = Socialite::driver('google')->redirect()->getTargetUrl();
+        
+        // إضافة parameters لإجبار شاشة الموافقة
+        if (strpos($redirectUrl, '?') !== false) {
+            $redirectUrl .= '&prompt=consent&access_type=offline';
+        } else {
+            $redirectUrl .= '?prompt=consent&access_type=offline';
+        }
+        
+        return redirect($redirectUrl);
     }
 
 
@@ -28,7 +38,7 @@ class GoogleController extends Controller
         try {
             $googleCode = $request->query('code');
             // جلب بيانات المستخدم من جوجل
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')->user();
 
             // البحث عن المستخدم في قاعدة البيانات
             $user = Userauth::where('email', $googleUser->getEmail())->first();
