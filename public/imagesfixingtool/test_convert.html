@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>تشغيل تحويل WebP</title>
+</head>
+<body>
+    <h2>تشغيل تحويل الصورة إلى WebP</h2>
+    <p>سيتم تحويل الصورة: ads/1751052061_ad-main-image</p>
+    
+    <form method="POST" action="convert_to_webp_existing.php">
+        <input type="hidden" name="image_id" value="271">
+        <input type="hidden" name="ad_id" value="271">
+        <input type="hidden" name="image_type" value="main">
+        <input type="hidden" name="current_path" value="ads/1751052061_ad-main-image">
+        <input type="hidden" name="found_file" value="1751052061_ad-main-image">
+        <button type="submit" name="convert_to_webp" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 14px; cursor: pointer;">
+            🌟 تحويل إلى WebP
+        </button>
+    </form>
+    
+    <script>
+        // تشغيل الفورم تلقائياً
+        window.onload = function() {
+            document.forms[0].submit();
+        };
+    </script>
+</body>
+</html>

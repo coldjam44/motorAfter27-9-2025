@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('auction_bids', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('auction_handler_id')->constrained('auction_handlers')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('userauths')->onDelete('cascade');
-            $table->decimal('bid_amount', 10, 2);
-            $table->timestamp('created_at')->useCurrent();
-            $table->index('bid_amount');
-        });
+        if (!Schema::hasTable('auction_bids')) {
+            Schema::create('auction_bids', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('auction_handler_id')->constrained('auction_handlers')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('userauths')->onDelete('cascade');
+                $table->decimal('bid_amount', 10, 2);
+                $table->timestamp('created_at')->useCurrent();
+                $table->index('bid_amount');
+            });
+        }
     }
 
     /**
