@@ -15,18 +15,18 @@ package-lock.json
 .env
 
 # Ignore media folders in public
-/public/ads/
-/public/ads_copy/
-/public/blog/
-/public/categorys/
-/public/chat_attachments/
-/public/cover_images/
-/public/imgremvable/
-/public/profile_images/
-/public/reels/
-/public/removablemedia/
-/public/thumbnail/
-/public/ثمنيلللز/
+public/ads/
+public/ads_copy/
+public/blog/
+public/categorys/
+public/chat_attachments/
+public/cover_images/
+public/imgremvable/
+public/profile_images/
+public/reels/
+public/removablemedia/
+public/thumbnail/
+public/ثمنيلللز/
 
 # Ignore SQL backups in public
-/public/motors_backup_download.sql
+public/motors_backup_download.sql
