@@ -35,7 +35,7 @@ Route::group(
 
         Route::group(['middleware' => 'guest'],function(){
             Route::get('/', function () {
-                return view('auth.login');
+                return view('front.pages.home');
             });
         });
             Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -76,3 +76,33 @@ Route::post('/categories/{categoryId}/toggle-kilometers', [CategoryController::c
 Route::get('auth/google',[GoogleController::class,'googlepage']);
 Route::get('auth/google/callback',[GoogleController::class,'googlecallback']);
 Route::get('/google/authenticate', [GoogleController::class, 'getLogindataUsingGoogleCode']);
+
+// Public pages
+Route::get('/privacy-policy', function () {
+    return view('front.pages.privacy-policy');
+})->name('privacy.policy');
+
+Route::get('/terms-of-service', function () {
+    return view('front.pages.terms-of-service');
+})->name('terms.service');
+
+// Serve Google Search Console verification file (in case static file isn't served by webserver)
+Route::get('/google7afffc6b0c14f7cf.html', function () {
+    return response('google-site-verification: google7afffc6b0c14f7cf.html', 200)
+        ->header('Content-Type', 'text/plain');
+});
+
+// Redirect non-localized root to localized root (example: /en)
+Route::get('/', function () {
+    // LaravelLocalization::setLocale() returns the locale string (e.g. "en").
+    // If the package cannot determine a locale it may return null. In that
+    // case fall back to the app default locale to avoid returning an empty
+    // redirect target or creating a redirect loop back to the same URL.
+    $locale = LaravelLocalization::setLocale();
+    if (empty($locale)) {
+        $locale = config('app.locale');
+    }
+
+    // Ensure we redirect to a concrete path like '/en' (not to the host root).
+    return redirect('/' . ltrim($locale, '/'));
+});

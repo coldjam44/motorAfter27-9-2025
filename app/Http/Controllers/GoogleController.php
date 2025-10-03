@@ -17,19 +17,20 @@ use Exception;
 
 class GoogleController extends Controller
 {
-    // public function googlepage()
-    // {
-    //     return Socialite::driver('google')->redirect();
-    // }
-
-public function googlepage()
-{
-    return Socialite::driver('google')
-        ->with(['prompt' => 'select_account consent'])
-        ->redirect();
-}
-
-
+    public function googlepage()
+    {
+        // طريقة أبسط: استخدام Socialite مع تعديل URL
+        $redirectUrl = Socialite::driver('google')->redirect()->getTargetUrl();
+        
+        // إضافة parameters لإجبار شاشة الموافقة
+        if (strpos($redirectUrl, '?') !== false) {
+            $redirectUrl .= '&prompt=consent&access_type=offline';
+        } else {
+            $redirectUrl .= '?prompt=consent&access_type=offline';
+        }
+        
+        return redirect($redirectUrl);
+    }
 
 
     public function googleCallback(Request $request)
@@ -37,7 +38,7 @@ public function googlepage()
         try {
             $googleCode = $request->query('code');
             // جلب بيانات المستخدم من جوجل
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')->user();
 
             // البحث عن المستخدم في قاعدة البيانات
             $user = Userauth::where('email', $googleUser->getEmail())->first();

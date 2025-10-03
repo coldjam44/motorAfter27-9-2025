@@ -276,7 +276,17 @@ class AdController extends Controller
 
         // حفظ الصورة الرئيسية مع العلامة المائية وتغيير الأبعاد
         $mainImage = $request->file('main_image');
-        $mainImageName = time() . '_' . $mainImage->getClientOriginalName();
+        
+        // اكتشاف نوع الملف الحقيقي من المحتوى
+        $mimeType = $mainImage->getMimeType();
+        $extensionMap = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png', 
+            'image/webp' => 'webp',
+            'image/gif' => 'gif'
+        ];
+        $extension = $extensionMap[$mimeType] ?? 'jpg';
+        $mainImageName = time() . '_' . uniqid() . '_main.' . $extension;
         $mainImagePath = public_path('ads/' . $mainImageName);
 
         $image = Image::make($mainImage->getRealPath());
@@ -363,8 +373,17 @@ class AdController extends Controller
             $subImages = $request->file('sub_images');
 
             if (is_array($subImages)) {
-                foreach ($subImages as $subImage) {
-                    $subImageName = 'sub_' . time() . '_' . $subImage->getClientOriginalName();
+                foreach ($subImages as $index => $subImage) {
+                    // اكتشاف نوع الملف الحقيقي من المحتوى
+                    $subMimeType = $subImage->getMimeType();
+                    $subExtensionMap = [
+                        'image/jpeg' => 'jpg',
+                        'image/png' => 'png', 
+                        'image/webp' => 'webp',
+                        'image/gif' => 'gif'
+                    ];
+                    $subExtension = $subExtensionMap[$subMimeType] ?? 'jpg';
+                    $subImageName = 'sub_' . time() . '_' . uniqid() . '_' . $index . '.' . $subExtension;
                     $subImagePath = public_path('ads/' . $subImageName);
 
                     $subImg = Image::make($subImage->getRealPath());
@@ -597,7 +616,17 @@ class AdController extends Controller
 
             // رفع الصورة الجديدة
             $mainImage = $request->file('main_image');
-            $mainImageName = time() . '_' . $mainImage->getClientOriginalName();
+            
+            // اكتشاف نوع الملف الحقيقي من المحتوى
+            $mimeType = $mainImage->getMimeType();
+            $extensionMap = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png', 
+                'image/webp' => 'webp',
+                'image/gif' => 'gif'
+            ];
+            $extension = $extensionMap[$mimeType] ?? 'jpg';
+            $mainImageName = time() . '_' . uniqid() . '_main.' . $extension;
             $mainImagePath = public_path('ads/' . $mainImageName);
 
             $image = Image::make($mainImage->getRealPath());
@@ -632,8 +661,17 @@ class AdController extends Controller
             }
 
             // رفع الصور الفرعية الجديدة
-            foreach ($request->file('sub_images') as $subImage) {
-                $subImageName = 'sub_' . time() . '_' . $subImage->getClientOriginalName();
+            foreach ($request->file('sub_images') as $index => $subImage) {
+                // اكتشاف نوع الملف الحقيقي من المحتوى
+                $subMimeType = $subImage->getMimeType();
+                $subExtensionMap = [
+                    'image/jpeg' => 'jpg',
+                    'image/png' => 'png', 
+                    'image/webp' => 'webp',
+                    'image/gif' => 'gif'
+                ];
+                $subExtension = $subExtensionMap[$subMimeType] ?? 'jpg';
+                $subImageName = 'sub_' . time() . '_' . uniqid() . '_' . $index . '.' . $subExtension;
                 $subImagePath = public_path('ads/' . $subImageName);
 
                 $subImg = Image::make($subImage->getRealPath());
