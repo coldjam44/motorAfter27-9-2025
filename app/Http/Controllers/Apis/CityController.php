@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Apis;
 
-use App\Models\city;
+use App\Models\City;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ class CityController extends Controller
 {
     $country_id = $request->query('country_id'); // استلام country_id من الـ request
 
-    $cities = city::when($country_id, function ($query) use ($country_id) {
+    $cities = City::when($country_id, function ($query) use ($country_id) {
         return $query->where('country_id', $country_id);
     })->get();
 
@@ -32,7 +32,7 @@ class CityController extends Controller
             'country_id' => 'required|exists:countries,id',
         ]);
 
-        $city = city::create($validated);
+        $city = City::create($validated);
 
         return response()->json(['message' => 'City created successfully', 'city' => $city], 201);
     }
@@ -42,7 +42,7 @@ class CityController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $city = city::findOrFail($id);
+        $city = City::findOrFail($id);
         return response()->json(['city' => $city], 200);
     }
 
@@ -57,7 +57,7 @@ class CityController extends Controller
             'country_id' => 'required|exists:countries,id',
         ]);
 
-        $city = city::findOrFail($id);
+        $city = City::findOrFail($id);
         $city->update($validated);
 
         return response()->json(['message' => 'City updated successfully', 'city' => $city], 200);
@@ -68,7 +68,7 @@ class CityController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        $city = city::findOrFail($id);
+        $city = City::findOrFail($id);
         $city->delete();
 
         return response()->json(['message' => 'City deleted successfully'], 200);

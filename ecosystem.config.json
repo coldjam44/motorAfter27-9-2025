@@ -1,0 +1,55 @@
+{
+  "apps": [
+    {
+      "name": "motors-website",
+      "script": "artisan",
+      "args": "serve --host=0.0.0.0 --port=8000",
+      "interpreter": "php",
+      "cwd": "/home/smallwombat98/htdocs/motors.azsystems.tech/public",
+      "instances": 1,
+      "exec_mode": "fork",
+      "watch": false,
+      "max_memory_restart": "1G",
+      "env": {
+        "APP_ENV": "production",
+        "NODE_ENV": "production"
+      },
+      "env_development": {
+        "APP_ENV": "local",
+        "NODE_ENV": "development"
+      },
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "error_file": "/home/smallwombat98/htdocs/motors.azsystems.tech/public/storage/logs/pm2-error.log",
+      "out_file": "/home/smallwombat98/htdocs/motors.azsystems.tech/public/storage/logs/pm2-out.log",
+      "log_file": "/home/smallwombat98/htdocs/motors.azsystems.tech/public/storage/logs/pm2-combined.log",
+      "merge_logs": true,
+      "autorestart": true,
+      "restart_delay": 4000,
+      "max_restarts": 10,
+      "min_uptime": "10s"
+    },
+    {
+      "name": "motors-queue-worker",
+      "script": "artisan",
+      "args": "queue:work --sleep=3 --tries=3 --max-time=3600",
+      "interpreter": "php",
+      "cwd": "/home/smallwombat98/htdocs/motors.azsystems.tech/public",
+      "instances": 1,
+      "exec_mode": "fork",
+      "watch": false,
+      "max_memory_restart": "512M",
+      "env": {
+        "APP_ENV": "production"
+      },
+      "env_development": {
+        "APP_ENV": "local"
+      },
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "error_file": "/home/smallwombat98/htdocs/motors.azsystems.tech/public/storage/logs/queue-error.log",
+      "out_file": "/home/smallwombat98/htdocs/motors.azsystems.tech/public/storage/logs/queue-out.log",
+      "merge_logs": true,
+      "autorestart": true,
+      "restart_delay": 4000
+    }
+  ]
+}

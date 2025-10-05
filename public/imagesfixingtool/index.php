@@ -71,14 +71,8 @@ echo "Script Name: " . $_SERVER['SCRIPT_NAME'] . "<br>";
 
 echo "<hr>";
 
-// بيانات قاعدة البيانات المنسوخة من ملف .env
-$dbConfig = [
-    'host' => 'localhost',
-    'port' => '3306',
-    'database' => 'motorsss',
-    'username' => 'motorsss',
-    'password' => '4JJnTEgH3Qppl0qQojBY'
-];
+// بيانات قاعدة البيانات
+require_once 'dbconn.php';
 
 // حساب الصور بدون امتداد ملف
 echo "<h2 style='color: red;'>📊 إحصائيات الصور بدون امتداد ملف</h2>";

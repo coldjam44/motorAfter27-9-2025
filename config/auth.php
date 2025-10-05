@@ -14,11 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
-        'passwords' => 'users',
-        // 'guard' => 'api', // تغيير الحارس الافتراضي إلى JWT
-        // 'passwords' => 'userauths',
-
+        'guard' => 'api',
+        'passwords' => 'userauths',
     ],
 
     /*

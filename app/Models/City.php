@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Country;
 
-class city extends Model
+class City extends Model
 {
     use HasFactory;
     public $timestamps = true;

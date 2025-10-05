@@ -71,6 +71,21 @@ Route::post('/categories/{category}/fields/store-car-model', [CategoryFieldContr
       Route::post('categories/{category}/fields/ensureExists', [CategoryFieldController::class, 'ensureExists'])->name('categories.fields.ensureExists');
 
 Route::post('/categories/{categoryId}/toggle-kilometers', [CategoryController::class, 'toggleKilometers'])->name('categories.toggleKilometers');
+
+// Test routes for Pusher
+Route::get('/pusher-test', function () {
+    return view('pusher-test');
+})->name('pusher.test');
+
+Route::get('/pusher-test-arabic', function () {
+    return view('pusher-test-arabic');
+})->name('pusher.test.arabic');
+
+Route::post('/trigger-test-event', function () {
+    $message = request('message', 'Hello from Pusher! Time: ' . now()->format('H:i:s'));
+    event(new App\Events\AuctionUpdateTest($message));
+    return response()->json(['status' => 'Event triggered', 'message' => $message]);
+})->name('trigger.test.event');
 });
 
 Route::get('auth/google',[GoogleController::class,'googlepage']);

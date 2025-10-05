@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Apis;
 
-use App\Models\country;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
@@ -52,7 +52,7 @@ public function index()
             'image'   => 'required|image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
-        $country = new country();
+        $country = new Country();
         $country->name_ar = $request->name_ar;
         $country->name_en = $request->name_en;
        $country->currency_ar = $request->currency_ar;
@@ -83,7 +83,7 @@ public function index()
      */
     public function update(Request $request, $id)
     {
-        $country = country::findOrFail($id);
+        $country = Country::findOrFail($id);
 
         $request->validate([
             'name_ar' => 'required|string',
@@ -128,7 +128,7 @@ public function index()
      */
     public function destroy($id)
     {
-        $country = country::findOrFail($id);
+        $country = Country::findOrFail($id);
 
         $imagePath = public_path('countrys/' . $country->image);
         if (File::exists($imagePath)) {

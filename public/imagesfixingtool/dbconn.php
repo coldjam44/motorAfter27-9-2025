@@ -1,10 +1,10 @@
 <?php
 // ملف إعدادات قاعدة البيانات
 $dbConfig = [
-    'host' => 'localhost',
+    'host' => '127.0.0.1',
     'port' => '3306',
     'database' => 'motorsss',
     'username' => 'motorsss',
-    'password' => '4JJnTEgH3Qppl0qQojBY'
+    'password' => '3uVTKeramGAUcolpi07z'
 ];
 ?>
