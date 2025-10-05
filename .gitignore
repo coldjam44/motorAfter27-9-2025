@@ -27,8 +27,12 @@ Thumbs.db
 composer.lock
 package-lock.json.env
 
+
 /public/ads
 /public/ads_copy
 /public/chat_attachments
 /public/cover_images
 /public/imgremvable
+
+# Ignore nested public/public folder
+public/public/
