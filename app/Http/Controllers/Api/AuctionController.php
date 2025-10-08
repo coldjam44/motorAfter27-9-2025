@@ -15,9 +15,79 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Events\NewBidEvent;
+use Illuminate\Support\Facades\Log;
+
+
 
 class AuctionController extends Controller
 {
+
+    /**
+     * Close an auction (set status to 'ended')
+     */
+    public function closeAuction(Request $request, $id)
+    {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'غير مصرح لك بالوصول'
+                ], 401);
+            }
+
+            $auction = AuctionHandler::find($id);
+            if (!$auction) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'المزاد غير موجود'
+                ], 404);
+            }
+
+            // Only allow closing if not already ended
+            if ($auction->status === 'ended') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'المزاد مغلق بالفعل'
+                ], 400);
+            }
+
+            $auction->status = 'ended';
+            $auction->end_time = Carbon::now();
+            $auction->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم إغلاق المزاد بنجاح',
+                'auction' => [
+                    'id' => $auction->id,
+                    'status' => $auction->status,
+                    'end_time' => $auction->end_time
+                ]
+            ]);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'انتهت صلاحية التوكن'
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'التوكن غير صالح'
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'التوكن غير موجود'
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'حدث خطأ أثناء إغلاق المزاد: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     /**
      * إنشاء مزاد جديد
      * يستخدم AdController::store() أولاً ثم يضيف بيانات المزاد
@@ -456,6 +526,9 @@ class AuctionController extends Controller
             // تحديث سعر المزاد الحالي
             $auction->current_highest_bid = $bidAmount;
             $auction->save();
+
+            // إرسال حدث المزايدة الجديدة عبر Pusher
+            event(new NewBidEvent($auctionId, $bidAmount, $userId, auth()->user()->first_name . ' ' . auth()->user()->last_name));
             
             // عد المزايدات
             $totalBids = AuctionBid::where('auction_handler_id', $auction->id)->count();
@@ -508,7 +581,10 @@ class AuctionController extends Controller
             });
         }
 
-        $auctions = $query->orderBy('end_time', 'asc')->get()->map(function($auction) {
+    $perPage = (int) ($request->input('per_page') ?? 10);
+    if ($perPage <= 0) { $perPage = 10; }
+        $paginator = $query->orderBy('end_time', 'asc')->paginate($perPage);
+        $transformed = collect($paginator->items())->map(function($auction) {
             $mainImageUrl = $auction->ad && $auction->ad->main_image ? url($auction->ad->main_image) : null;
             $bidsCount = $auction->bids ? $auction->bids->count() : 0;
             $user = $auction->ad?->user;
@@ -526,11 +602,22 @@ class AuctionController extends Controller
                 'current_price' => $auction->current_highest_bid,
                 'seller_avatar' => $avatar
             ];
-        });
+        })->values();
 
         return response()->json([
-            'data' => $auctions,
-            'count' => $auctions->count()
+            'data' => $transformed,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+            'links' => [
+                'first' => $paginator->url(1),
+                'last' => $paginator->url($paginator->lastPage()),
+                'prev' => $paginator->previousPageUrl(),
+                'next' => $paginator->nextPageUrl(),
+            ]
         ]);
     }
 
@@ -782,7 +869,7 @@ class AuctionController extends Controller
                 'lot_number' => $auction->lot_number,
                 'ad_id' => $auction->ad_id,
                 'title' => $auction->ad->title ?? 'عنوان غير متوفر',
-                'description' => \Str::limit($auction->ad->description ?? '', 100),
+                'description' => Str::limit($auction->ad->description ?? '', 100),
                 'main_image_url' => $auction->ad->main_image ? url($auction->ad->main_image) : null,
                 'current_price' => $auction->current_highest_bid,
                 'starting_price' => $auction->starting_price,
@@ -795,7 +882,6 @@ class AuctionController extends Controller
                 ],
                 'location' => [
                     'country' => $auction->ad->country->name_ar ?? 'غير محدد',
-                    'city' => $auction->ad->city->name_ar ?? 'غير محدد'
                 ],
                 'seller' => [
                     'id' => $auction->ad->user->id ?? null,
@@ -1045,8 +1131,6 @@ class AuctionController extends Controller
                 // حساب الوقت المتبقي
                 $now = Carbon::now();
                 $endTime = Carbon::parse($auction->end_time);
-                
-                // حساب الوقت المتبقي
                 $remainingTime = [];
                 if ($endTime->isPast()) {
                     $remainingTime = [
@@ -1201,7 +1285,7 @@ class AuctionController extends Controller
 
         } catch (\Exception $e) {
             // في حالة فشل تحديث الإشعارات، نسجل الخطأ ولكن لا نوقف العملية
-            \Log::error('Failed to update auction notifications: ' . $e->getMessage());
+            Log::error('Failed to update auction notifications: ' . $e->getMessage());
         }
     }
 

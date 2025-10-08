@@ -205,7 +205,7 @@ Route::middleware('auth:api')->group(function () {
 });
 Route::get('/google/authenticate', [GoogleController::class, 'getLogindataUsingGoogleCode']);
 // ========== Auction Routes ==========
-use App\Http\Controllers\Api\AuctionController;
+use App\Http\Controllers\Api\AuctionController; 
 
 Route::middleware('auth:api')->group(function () {
     // إنشاء مزاد جديد
@@ -221,6 +221,9 @@ Route::middleware('auth:api')->group(function () {
     
     // جلب مزادات المستخدم
     Route::get('/auctions/my-auctions', [AuctionController::class, 'myAuctions']);
+
+    // إغلاق مزاد (close auction)
+    Route::patch('/auctions/{id}/close', [AuctionController::class, 'closeAuction']);
 });
 
 // routes عامة للمزادات (لا تحتاج تسجيل دخول)
