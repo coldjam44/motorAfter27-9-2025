@@ -22,4 +22,14 @@ class Reel extends Model
     {
         return $this->belongsTo(Ad::class, 'reels_ad_id');
     }
+
+    public function getReelsVideoUrlAttribute($value)
+    {
+        return $value ? str_replace('https://motors.azsystems.tech', 'https://backend.motorssooq.com', $value) : null;
+    }
+
+    public function getReelsThumbnailUrlAttribute($value)
+    {
+        return $value ? str_replace('https://motors.azsystems.tech', 'https://backend.motorssooq.com', $value) : null;
+    }
 }

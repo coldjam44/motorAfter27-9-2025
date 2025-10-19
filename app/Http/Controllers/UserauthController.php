@@ -204,12 +204,28 @@ class UserauthController extends Controller
     public function logout(Request $request)
     {
         try {
-            // إبطال التوكن الحالي (تسجيل الخروج)
-            JWTAuth::invalidate(JWTAuth::getToken());
+            // Try to get token from Authorization header, bearerToken helper, or request input
+            $token = JWTAuth::getToken() ?: $request->bearerToken() ?: $request->input('token');
+
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 400);
+            }
+
+            // Invalidate the token (logout)
+            JWTAuth::setToken($token)->invalidate();
 
             return response()->json(['message' => 'User logged out successfully'], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to log out'], 500);
+            // handle specific JWT exceptions if possible
+            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+                return response()->json(['message' => 'Token is invalid'], 400);
+            }
+
+            if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+                return response()->json(['message' => 'Token has already expired'], 400);
+            }
+
+            return response()->json(['message' => 'Failed to log out', 'error' => $e->getMessage()], 500);
         }
     }
 

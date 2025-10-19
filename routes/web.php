@@ -25,18 +25,22 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 |
 */
 
+Route::get('/', function () {
+    return view('front.pages.home');
+});
+
+Auth::routes();
+
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
         'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
     ], function(){
 
-        Auth::routes();
-
         Route::group(['middleware' => 'guest'],function(){
-            Route::get('/', function () {
-                return view('front.pages.home');
-            });
+            // Route::get('/', function () {
+            //     return view('front.pages.home');
+            // });
         });
             Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
             Route::resource('banners',BannerController::class);
@@ -86,7 +90,6 @@ Route::post('/trigger-test-event', function () {
     event(new App\Events\AuctionUpdateTest($message));
     return response()->json(['status' => 'Event triggered', 'message' => $message]);
 })->name('trigger.test.event');
-});
 
 Route::get('auth/google',[GoogleController::class,'googlepage']);
 Route::get('auth/google/callback',[GoogleController::class,'googlecallback']);
@@ -107,17 +110,4 @@ Route::get('/google7afffc6b0c14f7cf.html', function () {
         ->header('Content-Type', 'text/plain');
 });
 
-// Redirect non-localized root to localized root (example: /en)
-Route::get('/', function () {
-    // LaravelLocalization::setLocale() returns the locale string (e.g. "en").
-    // If the package cannot determine a locale it may return null. In that
-    // case fall back to the app default locale to avoid returning an empty
-    // redirect target or creating a redirect loop back to the same URL.
-    $locale = LaravelLocalization::setLocale();
-    if (empty($locale)) {
-        $locale = config('app.locale');
-    }
-
-    // Ensure we redirect to a concrete path like '/en' (not to the host root).
-    return redirect('/' . ltrim($locale, '/'));
 });

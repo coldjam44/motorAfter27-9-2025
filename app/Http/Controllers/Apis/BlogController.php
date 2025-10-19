@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Apis;
 
-use App\Models\blog;
+use App\Models\Blog;
 use Illuminate\Http\Request;
 use App\Http\Trait\GeneralTrait;
 use App\Http\Controllers\Controller;

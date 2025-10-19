@@ -20,7 +20,7 @@ public function sendMessage(Request $request)
         'message' => 'nullable|string',
         'receiver_id' => 'nullable|exists:userauths,id',
         'chat_id' => 'nullable|string',
-        'attachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // صور
+        'attachments.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // صور
     ]);
 
     $senderId = auth()->id();

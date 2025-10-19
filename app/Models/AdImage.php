@@ -17,4 +17,9 @@ class AdImage extends Model
     {
         return $this->belongsTo(Ad::class, 'ad_id');
     }
+
+    public function getImageAttribute($value)
+    {
+        return $value ? str_replace('https://motors.azsystems.tech', 'https://backend.motorssooq.com', $value) : null;
+    }
 }

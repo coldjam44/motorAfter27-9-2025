@@ -48,6 +48,16 @@ class Userauth extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+    public function getProfileImageAttribute($value)
+    {
+        return $value ? str_replace('https://motors.azsystems.tech', 'https://backend.motorssooq.com', $value) : null;
+    }
+
+    public function getCoverImageAttribute($value)
+    {
+        return $value ? str_replace('https://motors.azsystems.tech', 'https://backend.motorssooq.com', $value) : null;
+    }
+
     public function followers()
     {
         return $this->hasMany(Follower::class, 'following_id'); // الأشخاص الذين يتابعون هذا المستخدم

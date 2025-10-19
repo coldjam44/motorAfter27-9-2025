@@ -103,9 +103,14 @@ class Ad extends Model
     {
         return $this->hasMany(AdFeature::class, 'car_ad_id')->with('value');
     }
-public function reel()
-{
-    return $this->hasOne(Reel::class, 'reels_ad_id');
-}
+    public function reel()
+    {
+        return $this->hasOne(Reel::class, 'reels_ad_id');
+    }
+
+    public function getMainImageAttribute($value)
+    {
+        return $value ? str_replace('https://motors.azsystems.tech', 'https://backend.motorssooq.com', $value) : null;
+    }
 
 }

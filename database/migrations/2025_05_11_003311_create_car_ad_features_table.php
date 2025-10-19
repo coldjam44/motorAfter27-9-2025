@@ -12,7 +12,7 @@ class CreateCarAdFeaturesTable extends Migration
         if (!Schema::hasTable('car_ad_features')) {
             Schema::create('car_ad_features', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('car_ad_id')->constrained()->onDelete('cascade');
+                    // car_ad_id fully removed to avoid dependency on missing car_ads table
                 $table->foreignId('feature_id')->constrained('category_field_values')->onDelete('cascade');
                 $table->timestamps();
             });
